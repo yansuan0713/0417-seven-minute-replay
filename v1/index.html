@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>04:17 ｜ 七分钟重播 —— 原创悬疑 ARG</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="scanlines" aria-hidden="true"></div>
+<main class="wrap">
+
+  <header class="masthead">
+    <div class="badge">渚城数据修复组 · 案件编号 0417 · 密级：调查员</div>
+    <h1 class="title"><span class="clock">04:17</span> 七分钟重播</h1>
+    <p class="subtitle">2034 年 5 月 17 日凌晨，渚城全城的联网记录在 04:17 前后出现七分钟异常。<br>
+    时间没有留下空白——它留下了别的东西。你是本案调查员。</p>
+    <div class="progress" id="progress">
+      <span class="step" data-step="1">阶段一 · 抓拍日志</span>
+      <span class="step" data-step="2">阶段二 · 证据袋 17</span>
+      <span class="step" data-step="3">阶段三 · 陈述与权限</span>
+      <span class="step" data-step="4">结案</span>
+    </div>
+  </header>
+
+  <!-- ===== 简介 ===== -->
+  <section class="panel" id="intro">
+    <h2>调查简报</h2>
+    <p>河心数据塔夜班保全员<strong>苏晏</strong>在异常当晚失联。市政系统对外宣称“授时故障，记录缺失七分钟”，
+    但数据修复组恢复出的碎片显示：缺失的说法站不住脚。</p>
+    <p>规则只有三条：</p>
+    <ul>
+      <li>一切结论必须能被给出的证据推出，不许猜。</li>
+      <li>注意每份材料<strong>用什么计时</strong>——读墙钟的，和不读墙钟的。</li>
+      <li>进度保存在本机浏览器中，可随时关掉页面回来继续。</li>
+    </ul>
+    <button class="btn" id="btn-start">开始调查</button>
+  </section>
+
+  <!-- ===== 阶段一 ===== -->
+  <section class="panel hidden" id="stage1">
+    <h2>阶段一 · 塔下停车场出口连续抓拍日志</h2>
+    <p class="note">数据修复组注：照片序号按快门实际触发顺序排列，连续无缺号。入场时刻由入口闸机打印在票卡上；
+    票面时长由票卡芯片内的<strong>单调计时器</strong>独立记录，不读取出口墙钟。出口水印时间来自联网监控系统。</p>
+    <div class="table-scroll">
+    <table>
+      <thead><tr><th>照片序号</th><th>车尾号</th><th>入场时刻</th><th>出口水印时间</th><th>票面时长</th></tr></thead>
+      <tbody>
+        <tr><td>#441</td><td>314</td><td>02:04</td><td>04:05</td><td>2 小时 01 分</td></tr>
+        <tr><td>#442</td><td>902</td><td>03:31</td><td>04:13</td><td>0 小时 42 分</td></tr>
+        <tr><td>#443</td><td>677</td><td>01:52</td><td>04:18</td><td>2 小时 26 分</td></tr>
+        <tr><td>#444</td><td>518</td><td>02:47</td><td>04:23</td><td>1 小时 36 分</td></tr>
+        <tr><td>#445</td><td>205</td><td>03:58</td><td>04:20</td><td>0 小时 29 分</td></tr>
+        <tr><td>#446</td><td>846</td><td>00:47</td><td>04:21</td><td>3 小时 41 分</td></tr>
+        <tr><td>#447</td><td>739</td><td>02:56</td><td>04:24</td><td>1 小时 35 分</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <h3>研判 1：这七分钟里，时间到底出了什么问题？</h3>
+    <div class="options" data-group="q1">
+      <button class="opt" data-t="q1a-8f3">全市时间停摆了七分钟，所有记录因此缺失一段</button>
+      <button class="opt" data-t="q1b-2c9">有人删除了七分钟的记录，时间本身正常流逝</button>
+      <button class="opt" data-t="q1c-7d1">联网墙钟被回滚了七分钟，同一段时间在记录里出现了两次</button>
+      <button class="opt" data-t="q1d-5e6">所有设备同时走慢了，七分钟被均匀地拉长了</button>
+    </div>
+
+    <h3>研判 2：#445 这辆车，真实离场时刻是几点？</h3>
+    <div class="answer-row">
+      <input id="s1-time" inputmode="numeric" placeholder="例：05:06" maxlength="6" aria-label="#445 真实离场时刻">
+    </div>
+
+    <div class="btn-row">
+      <button class="btn" id="btn-s1">提交研判</button>
+      <button class="btn ghost" data-hint="s1">提示</button>
+    </div>
+    <p class="hint hidden" data-hint-text="s1"></p>
+    <p class="feedback" id="fb-s1" role="status"></p>
+  </section>
+
+  <!-- ===== 阶段二 ===== -->
+  <section class="panel hidden" id="stage2">
+    <h2>阶段二 · 证据袋 17</h2>
+    <p>第一阶段的研判成立后，修复组解封了下一份材料：一只从数据塔一层便利舱
+    <strong>17 号储物柜</strong>中取出的证据袋。袋内物品暂不可见——先要通过封存校验。</p>
+    <p class="note">封存规则（修复组于封存当时设定）：解封码为四位数字，等于
+    <strong>#445 号车辆的真实离场时刻</strong>（HHMM，去掉冒号）。不知道真实时刻的人，打不开这只袋子。</p>
+    <div class="answer-row">
+      <input id="s2-code" inputmode="numeric" placeholder="四位解封码" maxlength="4" aria-label="证据袋解封码">
+      <button class="btn" id="btn-s2">解封</button>
+      <button class="btn ghost" data-hint="s2">提示</button>
+    </div>
+    <p class="hint hidden" data-hint-text="s2"></p>
+    <p class="feedback" id="fb-s2" role="status"></p>
+
+    <div class="hidden" id="locker">
+      <h3>证据袋内容</h3>
+      <div class="doc">
+        <p class="doc-title">物品 1 —— 手写记录卡（字迹经核验为苏晏）</p>
+        <p>“原件在第一遍 04:20 被人用克隆卡从 B2 冷档案库取走。我把副本放进 17 号柜。
+        如果我没能回来：别信墙钟，信不读墙钟的东西。”</p>
+      </div>
+      <div class="doc">
+        <p class="doc-title">物品 2 —— 审计片副本 · 附带元数据（由芯片本地单调计数记录）</p>
+        <pre>指令      : CLOCK / CONTINUITY-DRILL（连续性回滚演练）
+参数      : 回滚 420 秒
+执行时刻  : 对应第一遍墙钟 04:24:00
+执行席位  : OPS-03（数据塔主管室固定终端）
+双因子    : 虹膜 + 工牌，均通过
+附注      : 当晚 OPS-03 的虹膜登记名单只有一人，见第三阶段权限表</pre>
+      </div>
+      <button class="btn" id="btn-to3">继续调查：调取当晚陈述与权限表</button>
+    </div>
+  </section>
+
+  <!-- ===== 阶段三 ===== -->
+  <section class="panel hidden" id="stage3">
+    <h2>阶段三 · 陈述与权限</h2>
+
+    <h3>当晚权限表（人事系统导出，未经联网墙钟处理）</h3>
+    <div class="table-scroll">
+    <table>
+      <thead><tr><th>姓名</th><th>身份</th><th>OPS-03 虹膜登记</th><th>工牌</th><th>备注</th></tr></thead>
+      <tbody>
+        <tr><td>顾衡</td><td>数据塔运维主管</td><td>✔ 登记人</td><td>✔</td><td>座车为塔方运维车，尾号 205</td></tr>
+        <tr><td>赵启明</td><td>夜班保安</td><td>✘</td><td>✔</td><td>当晚巡逻区为 B2 与货运电梯井道口</td></tr>
+        <tr><td>陈默</td><td>一层便利舱店员</td><td>✘</td><td>✘</td><td>无数据塔终端权限</td></tr>
+        <tr><td>苏晏</td><td>夜班保全员</td><td>✘</td><td>✔</td><td>有 B2 门禁，无 OPS-03 权限</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <h3>三份陈述</h3>
+    <div class="doc">
+      <p class="doc-title">顾衡（运维主管）</p>
+      <p>“监控显示我的车 04:20 就离场了。回滚是 04:24 才触发的——我那时早就不在塔内，不可能碰 OPS-03。”</p>
+    </div>
+    <div class="doc">
+      <p class="doc-title">赵启明（夜班保安）</p>
+      <p>“04:17 到 04:31 之间，货运电梯从 B2 上到 1 层，只动过一次。我在井道口听得清清楚楚。”</p>
+    </div>
+    <div class="doc">
+      <p class="doc-title">陈默（便利舱店员）</p>
+      <p>“店里的挂钟是机械的，不联网。它指着 04:31 的时候，苏晏从后门进来，躲进了后间。
+      她说原件被拿走了，副本在 17 号柜。”</p>
+    </div>
+
+    <h3>研判 3：触发回滚的人是谁？</h3>
+    <div class="options" data-group="culprit">
+      <button class="opt" data-t="p-g-41x">顾衡</button>
+      <button class="opt" data-t="p-c-09m">陈默</button>
+      <button class="opt" data-t="p-z-77q">赵启明</button>
+      <button class="opt" data-t="p-s-23w">苏晏</button>
+    </div>
+
+    <h3>研判 4：顾衡的陈述被哪条证据击穿？</h3>
+    <div class="options" data-group="contra">
+      <button class="opt" data-t="c-b-84n">他名下根本没有车，座车记录是伪造的</button>
+      <button class="opt" data-t="c-a-61r">他的车并非真实 04:20 离场——真实离场在回滚触发之后，他当时仍在塔内</button>
+      <button class="opt" data-t="c-c-35k">OPS-03 其实不需要虹膜，任何人都能操作</button>
+      <button class="opt" data-t="c-d-92w">货运电梯当晚其实动过两次，与保安的说法冲突</button>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn" id="btn-s3">提交结论并结案</button>
+      <button class="btn ghost" data-hint="s3">提示</button>
+    </div>
+    <p class="hint hidden" data-hint-text="s3"></p>
+    <p class="feedback" id="fb-s3" role="status"></p>
+  </section>
+
+  <!-- ===== 结案 ===== -->
+  <section class="panel hidden" id="finale">
+    <h2>结案 · 04:17 结案陈词</h2>
+    <p>真实时间 04:24:00，运维主管<strong>顾衡</strong>在主管室终端 OPS-03 上以自己的虹膜与工牌触发了
+    “连续性回滚演练”：全城联网墙钟倒回 04:17，同一段时间在记录中出现了两次。
+    他以为停车场水印上的 04:20 能证明自己早已离场——但票卡里的单调计时器不读墙钟：
+    他的车真实离场于 <strong>04:27</strong>，在回滚触发之后。他当时就在塔内。</p>
+    <p>他要抹掉的，是第一遍 04:20 用克隆卡进入 B2 冷档案库、取走原始审计片的那次进出——
+    那块审计片能证明他篡改过滨江防洪闸的维护记录。</p>
+    <p>而苏晏没有死。她发现原件失窃后把副本藏进 17 号柜，又在第二遍时间里乘货运电梯到达一层
+    （赵启明的陈述与此吻合），从便利舱后门躲进后间——机械挂钟指着 04:31，不联网，也就不会说谎。</p>
+    <p class="verdict">结案编号：<strong>0417-0427</strong>。时间没有消失过。说谎的从来不是时间，是看着墙钟说话的人。</p>
+    <button class="btn ghost" id="btn-reset">清除进度，重新调查</button>
+  </section>
+
+  <footer class="foot">原创悬疑 ARG《04:17 · 七分钟重播》 · 纯静态网页，无需注册 · 研判答案以哈希校验 · 查看源码等于提前拆阅结案陈词，请只相信证据</footer>
+</main>
+<script src="game.js"></script>
+</body>
+</html>
