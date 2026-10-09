@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>04:17 ｜ 七分钟重播 —— 自由探索式悬疑 ARG</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="scanlines" aria-hidden="true"></div>
+
+<header class="topbar">
+  <div class="brand"><span class="clock" id="title-clock">04:17</span> 七分钟重播 · 调查终端</div>
+  <div class="topmeta">
+    <span id="mat-count">关键材料 0 / 3</span>
+    <button class="btn small" data-goto="report">填写结案报告</button>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="side" aria-label="调查地点">
+    <button class="nav on" data-goto="home">▣ 调查简报</button>
+    <button class="nav" data-goto="parking">▤ 停车场抓拍系统</button>
+    <button class="nav" data-goto="tower">▥ 数据塔记录</button>
+    <button class="nav" data-goto="store">▦ 一层便利舱</button>
+    <button class="nav" data-goto="people">▧ 人事 · 权限 · 陈述</button>
+    <button class="nav" data-goto="messages">▨ 苏晏的终端残片</button>
+    <button class="nav" data-goto="fragments">▩ 恢复碎片（加密）</button>
+    <button class="nav warn" data-goto="report">✎ 结案报告</button>
+    <div class="side-note">没有阶段，没有顺序。<br>所有地点从一开始就向你开放。<br>终端不会评价你的任何中间结论——<br>只在结案时，一次性核对。</div>
+  </nav>
+
+  <main class="main">
+
+    <!-- ===== 简报 ===== -->
+    <section class="view" id="view-home">
+      <h2>调查简报 · 案件 0417</h2>
+      <p>2034 年 5 月 17 日凌晨，渚城全城联网记录在 04:17 前后出现七分钟异常。市政口径称“授时故障，记录缺失”。
+      河心数据塔夜班保全员<strong>苏晏</strong>当晚失联。数据修复组把恢复出的全部碎片装进了这台终端，交给你。</p>
+      <h3>这台终端的规矩</h3>
+      <ul>
+        <li><strong>自由探索</strong>：左侧七个地点随你逛，没有解锁顺序，也没有“答对才能继续”。</li>
+        <li><strong>三份关键材料被锁着</strong>，锁的形式各不相同：四位数字码、一句口令、一道时序拼图。
+        钥匙都不在锁旁边——它们藏在别处的材料里，需要你跨地点比对后自己推出来。</li>
+        <li><strong>关键词检索</strong>：苏晏的终端残片只能用关键词调取（试着搜人名、物品、地点）。搜不到，就是搜不到。</li>
+        <li><strong>只确认一次</strong>：终端不评价中间结论。当你认为真相完整了，去填<strong>结案报告</strong>，
+        六项研判会一次性核对，并告诉你哪几项成立、哪几项不成立。</li>
+        <li>注意每份材料<strong>用什么计时</strong>——读墙钟的，和不读墙钟的。</li>
+      </ul>
+      <h3>调查笔记（仅存于本机）</h3>
+      <textarea id="notes" rows="6" placeholder="把你的推论、算式、怀疑都写在这里。终端不会偷看，也不会纠正。"></textarea>
+      <p class="note" id="home-status">关键材料解封进度：0 / 3</p>
+    </section>
+
+    <!-- ===== 停车场 ===== -->
+    <section class="view hidden" id="view-parking">
+      <h2>停车场抓拍系统 · 塔下出口</h2>
+      <p class="note">照片序号按快门实际触发顺序排列，连续无缺号。入场时刻由入口闸机打印在票卡上；
+      票面时长由票卡芯片内的<strong>单调计时器</strong>独立记录，不读取出口墙钟。出口水印时间来自联网监控系统。</p>
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>照片序号</th><th>车尾号</th><th>入场时刻</th><th>出口水印时间</th><th>票面时长</th></tr></thead>
+        <tbody>
+          <tr><td>#441</td><td>314</td><td>02:04</td><td>04:05</td><td>2 小时 01 分</td></tr>
+          <tr><td>#442</td><td>902</td><td>03:31</td><td>04:13</td><td>0 小时 42 分</td></tr>
+          <tr><td>#443</td><td>677</td><td>01:52</td><td>04:18</td><td>2 小时 26 分</td></tr>
+          <tr><td>#444</td><td>518</td><td>02:47</td><td>04:23</td><td>1 小时 36 分</td></tr>
+          <tr><td>#445</td><td>205</td><td>03:58</td><td>04:20</td><td>0 小时 29 分</td></tr>
+          <tr><td>#446</td><td>846</td><td>00:47</td><td>04:21</td><td>3 小时 41 分</td></tr>
+          <tr><td>#447</td><td>739</td><td>02:56</td><td>04:24</td><td>1 小时 35 分</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="note">系统附言：本日志为原始导出，修复组未做任何标注。这里发生了什么，由你判断。</p>
+    </section>
+
+    <!-- ===== 数据塔 ===== -->
+    <section class="view hidden" id="view-tower">
+      <h2>数据塔记录</h2>
+      <h3>门禁摘要（联网墙钟，市政导出版）</h3>
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>水印时间</th><th>位置</th><th>事件</th></tr></thead>
+        <tbody>
+          <tr><td>04:20</td><td>B2 冷档案库门</td><td>刷卡进入 · 卡 ID：苏晏-03</td></tr>
+          <tr><td>04:20</td><td>保全室门</td><td>签到未离开 · 卡 ID：苏晏-03</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="note">同一分钟，同一张卡，出现在两个地方。市政导出版到此为止——原始日志在「恢复碎片」里，被时序拼图锁着。</p>
+      <h3>货运电梯运行记录（电梯本地计数器，不读墙钟）</h3>
+      <div class="doc"><p>当晚 04:17–04:31 区间（以便利舱机械挂钟为参照）：货运电梯由 B2 上行至 1 层，<strong>共运行 1 次</strong>。其余时间无运行记录。</p></div>
+      <h3>运维备忘（值班室白板拍照转录）</h3>
+      <div class="doc"><p>“连续性回滚演练”命令（CLOCK / CONTINUITY-DRILL）为紧急维护命令：执行后全城联网墙钟回滚指定秒数。
+      该命令只能在固定终端 OPS-03 上以<strong>虹膜＋工牌双因子</strong>执行，无远程通道。——运维组，3 月例行培训纪要</p></div>
+    </section>
+
+    <!-- ===== 便利舱 ===== -->
+    <section class="view hidden" id="view-store">
+      <h2>一层便利舱</h2>
+      <h3>店主备忘（陈默的手机备忘录，当晚）</h3>
+      <div class="doc"><p>店里的挂钟是机械的，上发条那种，从不联网，今晚走字正常。<br>
+      后间今晚借给一位熟客避一避，别问，别记名。<br>17 号柜的东西被修复组贴封了，说是要等调查员来开。</p></div>
+      <h3>17 号储物柜（修复组封存中）</h3>
+      <div class="doc">
+        <p>柜门贴有修复组封条。封存说明写道：</p>
+        <p class="note">“本柜解封码由封存系统按规则生成：四位数字，等于<strong>停车场 #445 号车辆的真实离场时刻</strong>（HHMM）。
+        算不出真实时刻的人，打不开这只柜子。此规则于封存当时设定，与租用人无关。”</p>
+        <div id="locker-lock">
+          <div class="answer-row">
+            <input id="locker-code" inputmode="numeric" maxlength="4" placeholder="四位解封码" aria-label="17 号柜解封码">
+            <button class="btn" id="btn-locker">解封</button>
+            <button class="btn ghost" data-hint="locker">提示</button>
+          </div>
+          <p class="hint hidden" data-hint-text="locker"></p>
+          <p class="feedback" id="fb-locker" role="status"></p>
+        </div>
+        <div id="locker-open" class="hidden">
+          <p class="ok-line">■ 已解封 · 关键材料 1 / 3</p>
+          <div class="doc inner">
+            <p class="doc-title">物品 1 —— 手写记录卡（字迹经核验为苏晏）</p>
+            <p>“原件在第一遍 04:20 被人用克隆卡从 B2 冷档案库取走。我把副本放进 17 号柜。
+            如果我没能回来：别信墙钟，信不读墙钟的东西。”</p>
+          </div>
+          <div class="doc inner">
+            <p class="doc-title">物品 2 —— 审计片副本 · 附带元数据（芯片本地单调计数记录）</p>
+            <pre>指令      : CLOCK / CONTINUITY-DRILL（连续性回滚演练）
+参数      : 回滚 420 秒
+执行时刻  : 对应第一遍墙钟 04:24:00
+执行席位  : OPS-03（数据塔主管室固定终端）
+双因子    : 虹膜 + 工牌，均通过</pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 人事 ===== -->
+    <section class="view hidden" id="view-people">
+      <h2>人事 · 权限 · 陈述</h2>
+      <h3>当晚权限表（人事系统导出，未经联网墙钟处理）</h3>
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>姓名</th><th>身份</th><th>OPS-03 虹膜登记</th><th>工牌</th><th>备注</th></tr></thead>
+        <tbody>
+          <tr><td>顾衡</td><td>数据塔运维主管</td><td>✔ 登记人（当晚唯一）</td><td>✔</td><td>座车为塔方运维车，尾号 205</td></tr>
+          <tr><td>赵启明</td><td>夜班保安</td><td>✘</td><td>✔</td><td>当晚巡逻区为 B2 与货运电梯井道口</td></tr>
+          <tr><td>陈默</td><td>一层便利舱店员</td><td>✘</td><td>✘</td><td>无数据塔终端权限</td></tr>
+          <tr><td>苏晏</td><td>夜班保全员</td><td>✘</td><td>✔（卡 ID 苏晏-03，仅发卡一张）</td><td>有 B2 门禁，无 OPS-03 权限</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <h3>三份陈述（修复组整理，原文）</h3>
+      <div class="doc"><p class="doc-title">顾衡（运维主管）</p>
+        <p>“监控显示我的车 04:20 就离场了。回滚是 04:24 才触发的——我那时早就不在塔内，不可能碰 OPS-03。”</p></div>
+      <div class="doc"><p class="doc-title">赵启明（夜班保安）</p>
+        <p>“04:17 到 04:31 之间，货运电梯从 B2 上到 1 层，只动过一次。我在井道口听得清清楚楚。”</p></div>
+      <div class="doc"><p class="doc-title">陈默（便利舱店员）</p>
+        <p>“店里的挂钟是机械的，不联网。它指着 04:31 的时候，苏晏从后门进来，躲进了后间。
+        她说原件被拿走了，副本在 17 号柜。”</p></div>
+      <p class="note">陈述只是陈述。终端不会告诉你谁在说谎——去和材料对。</p>
+    </section>
+
+    <!-- ===== 终端残片检索 ===== -->
+    <section class="view hidden" id="view-messages">
+      <h2>苏晏的终端残片 · 关键词检索</h2>
+      <p class="note">她的个人终端只抢救出一批碎片，无法按时间浏览，只能用<strong>关键词</strong>调取：
+      输入一个词，命中的碎片会浮出来；没有命中，就什么都没有。试着用 人名 / 物品 / 地点 / 她会在意的词 去搜。</p>
+      <div class="answer-row">
+        <input id="search-word" placeholder="输入关键词，如：审计片" aria-label="检索关键词">
+        <button class="btn" id="btn-search">检索</button>
+      </div>
+      <p class="feedback" id="fb-search" role="status"></p>
+      <div id="frag-list"></div>
+    </section>
+
+    <!-- ===== 恢复碎片 ===== -->
+    <section class="view hidden" id="view-fragments">
+      <h2>恢复碎片（加密）</h2>
+
+      <div class="doc">
+        <p class="doc-title">碎片 A —— suyan_memo.enc（苏晏的加密备忘）</p>
+        <div id="memo-lock">
+          <p>口令是<strong>一个名词</strong>。她把口令的线索留在别处了——也许在她自己的碎片里，也许在某份材料的第一行。</p>
+          <div class="answer-row">
+            <input id="memo-pass" placeholder="输入口令" aria-label="备忘口令">
+            <button class="btn" id="btn-memo">解密</button>
+            <button class="btn ghost" data-hint="memo">提示</button>
+          </div>
+          <p class="hint hidden" data-hint-text="memo"></p>
+          <p class="feedback" id="fb-memo" role="status"></p>
+        </div>
+        <div id="memo-open" class="hidden">
+          <p class="ok-line">■ 已解密 · 关键材料 2 / 3</p>
+          <p>“门禁报警的时候我就在保全室——我的卡却在同一分钟进了 B2。有人拿着我的第二张脸。<br>
+          原件已经没了。副本按我发现的顺序放进了 17 号柜，卡片就压在副本下面。<br>
+          如果我失联：先去问那个<strong>从不读墙钟的东西</strong>，它记得真正的时刻；
+          再去敲便利舱的后门——我若出得去，只会去陈默那儿。货运梯只响一次的话，上去的就是我。”</p>
+        </div>
+      </div>
+
+      <div class="doc">
+        <p class="doc-title">碎片 B —— B2 原始门禁日志（时序拼图锁）</p>
+        <div id="seq-lock">
+          <p>原始日志的索引被打乱了。修复组确认下面<strong>四件事都真实发生过</strong>，但顺序记录损坏。
+          请按<strong>真实发生的先后</strong>依次点选四张事件卡，再校验顺序——顺序对了，日志才会展开。</p>
+          <div class="seq-grid" id="seq-grid">
+            <button class="seq-card" data-ev="e2">尾号 205 运维车离场<br><span>出口水印显示 04:20</span></button>
+            <button class="seq-card" data-ev="e4">回滚指令在 OPS-03 上执行<br><span>第一遍墙钟 04:24</span></button>
+            <button class="seq-card" data-ev="e3">尾号 205 运维车入场<br><span>入场时刻 03:58</span></button>
+            <button class="seq-card" data-ev="e1">克隆卡打开 B2 冷档案库<br><span>第一遍墙钟 04:20</span></button>
+          </div>
+          <div class="btn-row">
+            <button class="btn" id="btn-seq">校验顺序</button>
+            <button class="btn ghost" id="btn-seq-reset">重选</button>
+            <button class="btn ghost" data-hint="seq">提示</button>
+          </div>
+          <p class="hint hidden" data-hint-text="seq"></p>
+          <p class="feedback" id="fb-seq" role="status"></p>
+        </div>
+        <div id="seq-open" class="hidden">
+          <p class="ok-line">■ 顺序成立 · 关键材料 3 / 3</p>
+          <pre>04:20:07（第一遍） B2 门禁 · 刷卡进入
+  卡 ID：苏晏-03   卡序列号：SU03-B
+04:20:07（第一遍） 保全室门禁 · 签到未离开
+  卡 ID：苏晏-03   卡序列号：SU03-A
+卡务附注：苏晏名下仅发卡 SU03-A 一张。
+SU03-B 不在发卡名册中——它是一张克隆卡。</pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 结案报告 ===== -->
+    <section class="view hidden" id="view-report">
+      <h2>结案报告 · 一次性核对</h2>
+      <p class="note" id="report-status">提交前，终端不会评价任何一项。提交后，六项研判会同时给出成立 / 不成立；
+      不成立的可以改，改完可以重新提交。调查完整度不阻止提交——但完整的调查，配得上完整的结论。</p>
+
+      <h3>研判一：这七分钟里，时间到底出了什么问题？</h3>
+      <div class="options" data-group="q1">
+        <button class="opt" data-t="q1a-8f3">全市时间停摆了七分钟，所有记录因此缺失一段</button>
+        <button class="opt" data-t="q1b-2c9">有人删除了七分钟的记录，时间本身正常流逝</button>
+        <button class="opt" data-t="q1c-7d1">联网墙钟被回滚了七分钟，同一段时间在记录里出现了两次</button>
+        <button class="opt" data-t="q1d-5e6">所有设备同时走慢了，七分钟被均匀地拉长了</button>
+      </div>
+
+      <h3>研判二：停车场 #445（尾号 205）的真实离场时刻是？</h3>
+      <div class="answer-row"><input id="r-time" inputmode="numeric" maxlength="6" placeholder="例：05:06" aria-label="真实离场时刻"></div>
+
+      <h3>研判三：触发回滚的人是谁？</h3>
+      <div class="options" data-group="culprit">
+        <button class="opt" data-t="p-g-41x">顾衡</button>
+        <button class="opt" data-t="p-c-09m">陈默</button>
+        <button class="opt" data-t="p-z-77q">赵启明</button>
+        <button class="opt" data-t="p-s-23w">苏晏</button>
+      </div>
+
+      <h3>研判四：顾衡的陈述被哪条证据击穿？</h3>
+      <div class="options" data-group="contra">
+        <button class="opt" data-t="c-b-84n">他名下根本没有车，座车记录是伪造的</button>
+        <button class="opt" data-t="c-a-61r">他的车并非真实 04:20 离场——真实离场在回滚触发之后，他当时仍在塔内</button>
+        <button class="opt" data-t="c-c-35k">OPS-03 其实不需要虹膜，任何人都能操作</button>
+        <button class="opt" data-t="c-d-92w">货运电梯当晚其实动过两次，与保安的说法冲突</button>
+      </div>
+
+      <h3>研判五：苏晏现在在哪里？</h3>
+      <div class="options" data-group="where">
+        <button class="opt" data-t="w-a-19e">她已经在当晚乘车离开了渚城</button>
+        <button class="opt" data-t="w-c-58b">一层便利舱的后间——陈默把她藏了起来</button>
+        <button class="opt" data-t="w-b-44t">她被关在 B2 冷档案库里</button>
+        <button class="opt" data-t="w-d-67p">她当晚根本不在数据塔，陈述是编造的</button>
+      </div>
+
+      <h3>研判六：被取走的原件是什么，为什么值得偷？</h3>
+      <div class="options" data-group="motive">
+        <button class="opt" data-t="m-b-28f">数据塔的备用授时密钥，可用于再次回滚全城墙钟</button>
+        <button class="opt" data-t="m-a-73d">原始审计片——它能证明顾衡篡改过滨江防洪闸的维护记录</button>
+        <button class="opt" data-t="m-c-91h">苏晏的私人备份盘，里面是她的辞职信与日记</button>
+        <button class="opt" data-t="m-d-55q">一笔未登记的现金，藏在冷档案库的保险格里</button>
+      </div>
+
+      <div class="btn-row"><button class="btn" id="btn-report">提交结案报告</button></div>
+      <div id="report-result"></div>
+
+      <div id="finale" class="hidden">
+        <h3>结案陈词</h3>
+        <p>真实时间 04:24:00，运维主管<strong>顾衡</strong>在主管室终端 OPS-03 上以自己的虹膜与工牌触发了
+        “连续性回滚演练”：全城联网墙钟倒回 04:17，同一段时间在记录中出现了两次。
+        他以为停车场水印上的 04:20 能证明自己早已离场——但票卡里的单调计时器不读墙钟：
+        他的车真实离场于 <strong>04:27</strong>，在回滚触发之后。他当时就在塔内。</p>
+        <p>他要抹掉的，是第一遍 04:20 用克隆卡进入 B2 冷档案库、取走原始审计片的那次进出——
+        那块审计片能证明他篡改过滨江防洪闸的维护记录。克隆卡的序列号 SU03-B，从不在发卡名册上。</p>
+        <p>而苏晏没有死。她把副本藏进 17 号柜，在第二遍时间里乘货运电梯到达一层，
+        从便利舱后门躲进后间——机械挂钟指着 04:31。不联网的东西，不会说谎。</p>
+        <p class="verdict">结案编号：<strong>0417-0427</strong>。时间没有消失过。说谎的从来不是时间，是看着墙钟说话的人。</p>
+      </div>
+      <div class="btn-row"><button class="btn ghost" id="btn-reset">清除全部进度，重新调查</button></div>
+    </section>
+
+  </main>
+</div>
+
+<footer class="foot">原创悬疑 ARG《04:17 · 七分钟重播》 · 自由探索版 · 研判答案以哈希校验 · 查看源码等于提前拆阅结案陈词，请只相信证据</footer>
+<script src="game.js"></script>
+</body>
+</html>
