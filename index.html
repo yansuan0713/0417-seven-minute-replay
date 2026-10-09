@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>04:17 ｜ 七分钟重播 v3 —— 自由探索式悬疑 ARG</title>
+<style>
+:root{
+  --bg:#07090c; --panel:#0d1218; --line:#1e2a33; --ink:#d7e3e8; --dim:#8fa3ad;
+  --teal:#57e6c9; --amber:#ffb454; --bad:#ff6b6b; --ok:#7dff9a; --mid:#ffd97a;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:"Noto Serif SC","Songti SC","Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;line-height:1.8}
+.mono,table,input,pre,.brand,.nav,.btn,.opt,.chip{font-family:ui-monospace,"Noto Sans SC","PingFang SC",sans-serif}
+.scanlines{position:fixed;inset:0;pointer-events:none;z-index:9;opacity:.05;
+  background:repeating-linear-gradient(0deg,#fff 0 1px,transparent 1px 3px)}
+.topbar{position:sticky;top:0;z-index:5;display:flex;justify-content:space-between;align-items:center;
+  gap:12px;flex-wrap:wrap;background:#0a0f14;border-bottom:1px solid var(--line);padding:10px 18px}
+.brand{font-weight:700;letter-spacing:.05em;font-size:17px}
+.brand .clock{color:var(--teal);display:inline-block;min-width:5ch}
+.brand .clock.glitching{color:var(--amber);text-shadow:2px 0 var(--bad),-2px 0 var(--teal);transform:skewX(-7deg)}
+.topmeta{display:flex;gap:14px;align-items:center;color:var(--dim);font-size:13px}
+.shell{display:flex;gap:18px;max-width:1180px;margin:0 auto;padding:20px 16px 40px;align-items:flex-start}
+.side{display:flex;flex-direction:column;gap:8px;min-width:198px;position:sticky;top:64px}
+.nav{text-align:left;background:var(--panel);color:var(--ink);border:1px solid var(--line);
+  border-radius:8px;padding:9px 13px;font-size:14.5px;cursor:pointer}
+.nav:hover{border-color:var(--teal)}
+.nav.on{border-color:var(--teal);background:#122019;color:#fff}
+.nav.warn{border-color:#4a3a1c;color:var(--amber)}
+.side-note{color:var(--dim);font-size:12.5px;line-height:1.7;padding:8px 4px}
+.main{flex:1;min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:26px 24px}
+.hidden{display:none!important}
+h2{margin-top:0;font-size:23px;border-left:4px solid var(--teal);padding-left:10px;letter-spacing:.03em}
+h3{font-size:16.5px;color:var(--amber);margin:24px 0 8px}
+p{margin:8px 0}
+.note{color:var(--dim);font-size:14px;border:1px dashed var(--line);border-radius:8px;padding:10px 12px}
+strong{color:#fff}
+textarea{width:100%;background:#0a0f14;border:1px solid var(--line);border-radius:8px;color:var(--ink);
+  padding:10px 12px;font-size:14.5px;resize:vertical;line-height:1.7}
+textarea:focus{outline:none;border-color:var(--teal)}
+.table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:480px}
+th,td{border:1px solid var(--line);padding:7px 9px;text-align:center}
+th{background:#111a21;color:var(--teal)}
+td.l,th.l{text-align:left}
+.doc{background:#0a0f14;border:1px solid var(--line);border-radius:8px;padding:12px 16px;margin:10px 0}
+.doc.inner{background:#0d141b}
+.doc-title{color:var(--teal);font-size:13px;letter-spacing:.08em;margin:0 0 6px}
+.doc p{margin:4px 0}
+pre{white-space:pre-wrap;font-size:13.5px;margin:4px 0;line-height:1.65}
+.options{display:grid;gap:8px}
+.opt{text-align:left;background:#0a0f14;color:var(--ink);border:1px solid var(--line);
+  border-radius:8px;padding:10px 14px;font-size:15px;cursor:pointer;line-height:1.6}
+.opt:hover{border-color:var(--teal)}
+.opt.sel{border-color:var(--teal);background:#122019;color:#fff}
+.answer-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:8px 0}
+input{background:#0a0f14;border:1px solid var(--line);border-radius:8px;color:#fff;
+  padding:10px 14px;font-size:16px;width:230px}
+input:focus{outline:none;border-color:var(--teal)}
+.btn{background:var(--teal);color:#06110d;border:0;border-radius:8px;
+  padding:10px 22px;font-size:15px;font-weight:700;cursor:pointer}
+.btn.small{padding:6px 14px;font-size:13.5px}
+.btn.ghost{background:transparent;color:var(--dim);border:1px solid var(--line);font-weight:400}
+.btn:hover{filter:brightness(1.1)}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+.btn-row{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+.feedback{min-height:1.6em;font-weight:700}
+.feedback.ok{color:var(--ok)} .feedback.err{color:var(--bad)} .feedback.mid{color:var(--mid)}
+.hint{color:var(--amber);font-size:14px;border-left:3px solid var(--amber);padding-left:10px}
+.ok-line{color:var(--ok);font-weight:700}
+.seq-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:10px 0}
+.seq-card{position:relative;background:#0a0f14;color:var(--ink);border:1px solid var(--line);
+  border-radius:10px;padding:14px 12px;font-size:14.5px;cursor:pointer;text-align:left;line-height:1.55}
+.seq-card span{color:var(--dim);font-size:12.5px}
+.seq-card:hover{border-color:var(--teal)}
+.seq-card.picked{border-color:var(--amber);background:#1a1408}
+.seq-card .ord{position:absolute;top:6px;right:10px;color:var(--amber);font-weight:800;font-size:18px}
+.frag{border-left:3px solid var(--teal)}
+/* 证据引用 chips */
+.cite-box{border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin:8px 0 4px;background:#0a0f14}
+.cite-box .cite-title{color:var(--dim);font-size:13px;margin:0 0 8px}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{background:#0d141b;color:var(--ink);border:1px solid var(--line);border-radius:999px;
+  padding:4px 12px;font-size:13px;cursor:pointer}
+.chip:hover{border-color:var(--teal)}
+.chip.sel{border-color:var(--teal);background:#122019;color:#fff}
+.chip:disabled{opacity:.38;cursor:not-allowed;text-decoration:line-through}
+/* 时间轴 */
+.lanes{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:#0a0f14;font-size:13.5px}
+.lane{display:flex;align-items:center;gap:8px;margin:6px 0;flex-wrap:wrap}
+.lane .tag{min-width:74px;color:var(--teal);font-weight:700}
+.seg{border:1px solid var(--line);border-radius:6px;padding:2px 9px;color:var(--dim)}
+.seg.hot{border-color:var(--amber);color:var(--amber)}
+.seg.jump{border-color:var(--bad);color:var(--bad)}
+.tl-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:10px 0}
+.tl-card{background:#0a0f14;color:var(--ink);border:1px solid var(--line);border-radius:10px;
+  padding:12px;font-size:14px;cursor:pointer;text-align:left;line-height:1.55}
+.tl-card small{color:var(--dim);display:block;margin-top:4px;font-size:12.5px}
+.tl-card:hover{border-color:var(--teal)}
+.tl-card.placed{opacity:.35}
+.tl-strip{display:flex;flex-direction:column;gap:8px;margin:10px 0}
+.tl-item{display:flex;gap:10px;align-items:baseline;background:#101820;border:1px solid var(--amber);
+  border-radius:8px;padding:9px 12px;font-size:14px;cursor:pointer;text-align:left;color:var(--ink);width:100%}
+.tl-item .n{color:var(--amber);font-weight:800}
+.tl-item small{color:var(--dim)}
+/* 证据索引 */
+.idx-row{display:flex;justify-content:space-between;gap:10px;border:1px solid var(--line);
+  border-radius:8px;padding:9px 13px;margin:6px 0;font-size:14.5px;background:#0a0f14;flex-wrap:wrap}
+.idx-row .st{font-size:12.5px;border-radius:999px;padding:1px 10px;border:1px solid var(--line);color:var(--dim)}
+.idx-row .st.got{color:var(--ok);border-color:#2c5c3a}
+.idx-row .st.lock{color:var(--amber);border-color:#4a3a1c}
+/* 结案 */
+.result-item{padding:9px 13px;border:1px solid var(--line);border-radius:8px;margin:6px 0;font-size:14.5px}
+.result-item.ok{border-color:#2c5c3a;color:var(--ok)}
+.result-item.mid{border-color:#5c532c;color:var(--mid)}
+.result-item.no{border-color:#5c2c2c;color:var(--bad)}
+.finale-box{border:2px solid var(--teal);border-radius:12px;padding:22px;margin-top:18px;background:#0c1712;position:relative}
+.finale-box h3{color:var(--teal);margin-top:0}
+.seal{display:inline-block;border:2px solid var(--amber);color:var(--amber);border-radius:8px;
+  padding:6px 16px;font-weight:800;letter-spacing:.12em;transform:rotate(-2deg);margin:10px 0}
+.verdict{border:1px solid var(--teal);border-radius:8px;padding:12px 16px;background:#0e1a15}
+.foot{text-align:center;color:var(--dim);font-size:12px;padding:0 16px 30px}
+@media (max-width:760px){
+  .shell{flex-direction:column;padding:12px 10px 30px}
+  .side{flex-direction:row;flex-wrap:nowrap;overflow-x:auto;position:static;min-width:0;width:100%;padding-bottom:4px}
+  .nav{white-space:nowrap}
+  .side-note{display:none}
+  .main{padding:18px 14px;width:100%}
+  table{min-width:440px}
+  input{width:170px}
+}
+@media (prefers-reduced-motion: reduce){
+  .scanlines{display:none}
+}
+</style>
+</head>
+<body>
+<div class="scanlines" aria-hidden="true"></div>
+
+<header class="topbar">
+  <div class="brand"><span class="clock" id="title-clock">04:17</span> 七分钟重播 · 调查终端 v3</div>
+  <div class="topmeta">
+    <span id="mat-count">关键材料 0 / 3</span>
+    <button class="btn small" data-goto="report">填写结案报告</button>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="side" aria-label="调查地点">
+    <button class="nav on" data-goto="home">▣ 调查简报</button>
+    <button class="nav" data-goto="parking">▤ 停车场抓拍系统</button>
+    <button class="nav" data-goto="tower">▥ 数据塔记录</button>
+    <button class="nav" data-goto="store">▦ 一层便利舱</button>
+    <button class="nav" data-goto="people">▧ 人事 · 权限 · 陈述</button>
+    <button class="nav" data-goto="messages">▨ 苏晏的终端残片</button>
+    <button class="nav" data-goto="fragments">▩ 恢复碎片（加密）</button>
+    <button class="nav" data-goto="timeline">▦ 双时间轴证据板</button>
+    <button class="nav" data-goto="index">▤ 证据索引</button>
+    <button class="nav warn" data-goto="report">✎ 结案报告</button>
+    <div class="side-note">没有阶段，没有顺序。<br>所有地点从一开始就向你开放。<br>终端不评价任何中间结论——<br>只在结案报告里，整份集中核对。</div>
+  </nav>
+
+  <main class="main">
+
+    <!-- ===== 简报 ===== -->
+    <section class="view" id="view-home">
+      <h2>调查简报 · 案件 0417</h2>
+      <p>2034 年 5 月 17 日凌晨，渚城全城联网记录在 04:17 前后出现七分钟异常。市政口径称“授时故障，记录缺失”。
+      河心数据塔夜班保全员<strong>苏晏</strong>当晚失联。数据修复组把恢复出的全部碎片装进了这台终端，交给你。</p>
+      <h3>这台终端的规矩</h3>
+      <ul>
+        <li><strong>自由探索</strong>：所有地点随你逛，没有解锁顺序，也没有“答对才能继续”。</li>
+        <li><strong>三份关键材料被锁着</strong>，锁的形式各不相同：四位数字码、一句口令、一道时序拼图。
+        钥匙都不在锁旁边——它们藏在别处的材料里，需要你跨地点比对后自己推出来。</li>
+        <li><strong>关键词检索</strong>：苏晏的终端残片只能用关键词调取。搜不到时，终端会慢慢给你方向，但不会替你搜。</li>
+        <li><strong>双时间轴证据板</strong>：把你发现的事件卡按你认为的真实顺序排好，随时自检“有几张在正确位置”——终端只报个数，不说是哪几张。</li>
+        <li><strong>结案报告，整份集中核对</strong>：每项结论都要<strong>引用你已发现的材料</strong>作证据。
+        核对分三档：结论成立且证据充分 / 结论可能正确但证据不足 / 结论与现有证据冲突。可以改，可以重交。</li>
+        <li>注意每份材料<strong>用什么计时</strong>——读墙钟的，和不读墙钟的。还要分清：哪些是记录，哪些只是说法。</li>
+      </ul>
+      <h3>调查笔记（仅存于本机）</h3>
+      <textarea id="notes" rows="6" placeholder="把你的推论、算式、怀疑都写在这里。终端不会偷看，也不会纠正。" aria-label="调查笔记"></textarea>
+      <p class="note" id="home-status">关键材料解封进度：0 / 3</p>
+    </section>
+
+    <!-- ===== 停车场 ===== -->
+    <section class="view hidden" id="view-parking">
+      <h2>停车场抓拍系统 · 塔下出口</h2>
+      <p class="note">照片序号按快门实际触发顺序排列，连续无缺号。入场时刻由入口闸机打印在票卡上；
+      票面时长由票卡芯片内的<strong>单调计时器</strong>独立记录，不读取出口墙钟。出口水印时间来自联网监控系统。</p>
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>照片序号</th><th>车尾号</th><th>入场时刻</th><th>出口水印时间</th><th>票面时长</th></tr></thead>
+        <tbody>
+          <tr><td>#441</td><td>314</td><td>02:04</td><td>04:05</td><td>2 小时 01 分</td></tr>
+          <tr><td>#442</td><td>902</td><td>03:31</td><td>04:13</td><td>0 小时 42 分</td></tr>
+          <tr><td>#443</td><td>677</td><td>01:52</td><td>04:18</td><td>2 小时 26 分</td></tr>
+          <tr><td>#444</td><td>518</td><td>02:47</td><td>04:23</td><td>1 小时 36 分</td></tr>
+          <tr><td>#445</td><td>205</td><td>03:58</td><td>04:20</td><td>0 小时 29 分</td></tr>
+          <tr><td>#446</td><td>846</td><td>00:47</td><td>04:21</td><td>3 小时 41 分</td></tr>
+          <tr><td>#447</td><td>739</td><td>02:56</td><td>04:24</td><td>1 小时 35 分</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="note">系统附言：本日志为原始导出，修复组未做任何标注。这里发生了什么，由你判断。</p>
+    </section>
+
+    <!-- ===== 数据塔 ===== -->
+    <section class="view hidden" id="view-tower">
+      <h2>数据塔记录</h2>
+      <h3>门禁摘要（联网墙钟，市政导出版）</h3>
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>水印时间</th><th>位置</th><th class="l">事件</th></tr></thead>
+        <tbody>
+          <tr><td>04:20</td><td>B2 冷档案库门</td><td class="l">刷卡进入 · 卡 ID：苏晏-03</td></tr>
+          <tr><td>04:20</td><td>保全室门</td><td class="l">签到未离开 · 卡 ID：苏晏-03</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="note">同一分钟，同一张卡，出现在两个地方。市政导出版到此为止——原始日志在「恢复碎片」里，被时序拼图锁着。
+      另：市政通报，当日 05:00 全网授时已完成重同步。</p>
+
+      <h3>A-01 保管格压力传感记录（设备本地日志，不读墙钟）</h3>
+      <div class="doc"><pre>设备    : B2 冷档案库 · A-01 保管格压力传感器
+记录    : 第一遍 04:20:31，格内压力由 184g 降至 0g，此后未恢复
+附注    : 当晚 B2 门禁的进入记录，仅 04:20 一次（以原始日志索引为准）</pre></div>
+
+      <h3>卡务制卡机本地日志（设备本地记录，未联网）</h3>
+      <div class="doc"><pre>05-16 23:41:07  写入空白卡一张
+写入 ID   : 苏晏-03
+生成序列号 : SU03-B
+操作工牌   : GH-01
+附注      : 本机位于数据塔运维间，开启需当值工牌；日志保存在设备本地</pre></div>
+
+      <h3>市政维护现行记录（节选 · 滨江防洪闸）</h3>
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th class="l">条目</th><th class="l">现行内容</th><th>签字</th><th>日期</th></tr></thead>
+        <tbody>
+          <tr><td class="l">3 号闸阀芯检查</td><td class="l">检查合格</td><td>顾衡</td><td>2033-11-05（回填）</td></tr>
+          <tr><td class="l">5 号闸年度巡检</td><td class="l">已完成</td><td>顾衡</td><td>2033-11-05（回填）</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="note">这份记录在市政系统里放了一年多。没有人觉得它有什么不对。</p>
+
+      <h3>货运电梯运行记录（电梯本地计数器，不读墙钟）</h3>
+      <div class="doc"><p>当晚 04:17–04:31 区间（以便利舱机械挂钟为参照）：货运电梯由 B2 上行至 1 层，<strong>共运行 1 次</strong>。其余时间无运行记录。</p></div>
+      <h3>运维备忘（值班室白板拍照转录）</h3>
+      <div class="doc"><p>“连续性回滚演练”命令（CLOCK / CONTINUITY-DRILL）为紧急维护命令：执行后全城联网墙钟回滚指定秒数。
+      该命令只能在固定终端 OPS-03 上以<strong>虹膜＋工牌双因子</strong>执行，无远程通道。——运维组，3 月例行培训纪要</p></div>
+    </section>
+
+    <!-- ===== 便利舱 ===== -->
+    <section class="view hidden" id="view-store">
+      <h2>一层便利舱</h2>
+      <h3>店主备忘（陈默的手机备忘录，当晚）</h3>
+      <div class="doc"><p>店里的挂钟是机械的，上发条那种，从不联网，今晚走字正常。<br>
+      后间今晚借给一位熟客避一避，别问，别记名。<br>17 号柜的东西被修复组贴封了，说是要等调查员来开。</p></div>
+      <h3>17 号储物柜（修复组封存中）</h3>
+      <div class="doc">
+        <p>柜门贴有修复组封条。封存说明写道：</p>
+        <p class="note">“本柜解封码由封存系统按规则生成：四位数字，等于<strong>停车场 #445 号车辆的真实离场时刻</strong>（HHMM）。
+        算不出真实时刻的人，打不开这只柜子。此规则于封存当时设定，与租用人无关。”</p>
+        <div id="locker-lock">
+          <div class="answer-row">
+            <input id="locker-code" inputmode="numeric" maxlength="4" placeholder="四位解封码" aria-label="17 号柜解封码">
+            <button class="btn" id="btn-locker">解封</button>
+            <button class="btn ghost" data-hint="locker">提示</button>
+          </div>
+          <p class="hint hidden" data-hint-text="locker"></p>
+          <p class="feedback" id="fb-locker" role="status"></p>
+        </div>
+        <div id="locker-open" class="hidden">
+          <p class="ok-line">■ 已解封 · 关键材料 1 / 3</p>
+          <div class="doc inner">
+            <p class="doc-title">物品 1 —— 手写记录卡（字迹经核验为苏晏）</p>
+            <p>“原件在第一遍 04:20 被人用克隆卡从 B2 冷档案库取走。我把副本放进 17 号柜。
+            如果我没能回来：别信墙钟，信不读墙钟的东西。”</p>
+          </div>
+          <div class="doc inner">
+            <p class="doc-title">物品 2 —— 审计片副本 · 附带元数据（芯片本地单调计数记录）</p>
+            <pre>指令      : CLOCK / CONTINUITY-DRILL（连续性回滚演练）
+参数      : 回滚 420 秒
+执行时刻  : 对应第一遍墙钟 04:24:00
+执行席位  : OPS-03（数据塔主管室固定终端）
+双因子    : 虹膜 + 工牌，均通过（工牌编号 GH-01）</pre>
+          </div>
+          <div class="doc inner">
+            <p class="doc-title">物品 3 —— 审计片副本 · 内容摘录（A-01 原始维护记录）</p>
+            <pre>条目      : 滨江防洪闸 3 号闸阀芯检查
+原始结果  : 裂纹，未更换，待汛后处理
+责任签字  : （空白）
+完整性    : 副本内容哈希与保全登记簿中 A-01 的登记哈希一致
+            ——副本即原件之内容，可作比对</pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 人事 ===== -->
+    <section class="view hidden" id="view-people">
+      <h2>人事 · 权限 · 陈述</h2>
+      <h3>当晚权限表（人事系统导出，未经联网墙钟处理）</h3>
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>姓名</th><th>身份</th><th>工牌编号</th><th>OPS-03 虹膜登记</th><th class="l">备注</th></tr></thead>
+        <tbody>
+          <tr><td>顾衡</td><td>数据塔运维主管</td><td>GH-01</td><td>✔ 登记人（当晚唯一）</td><td class="l">座车为塔方运维车，尾号 205</td></tr>
+          <tr><td>赵启明</td><td>夜班保安</td><td>ZQ-04</td><td>✘</td><td class="l">当晚巡逻区为 B2 与货运电梯井道口</td></tr>
+          <tr><td>陈默</td><td>一层便利舱店员</td><td>—</td><td>✘</td><td class="l">无数据塔终端权限</td></tr>
+          <tr><td>苏晏</td><td>夜班保全员</td><td>SY-03</td><td>✘</td><td class="l">门禁卡 ID 苏晏-03（序列号 SU03-A），仅发卡一张；有 B2 门禁，无 OPS-03 权限</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <h3>05-16 夜班值班表（人事系统导出）</h3>
+      <div class="doc"><pre>运维间   : 顾衡
+保全室   : 苏晏
+巡逻     : 赵启明
+便利舱   : 陈默（非塔方人员，店铺自营）</pre></div>
+      <h3>三份陈述（修复组整理，原文）</h3>
+      <div class="doc"><p class="doc-title">顾衡（运维主管）</p>
+        <p>“监控显示我的车 04:20 就离场了。回滚是 04:24 才触发的——我那时早就不在塔内，不可能碰 OPS-03。”</p></div>
+      <div class="doc"><p class="doc-title">赵启明（夜班保安）</p>
+        <p>“04:17 到 04:31 之间，货运电梯从 B2 上到 1 层，只动过一次。我在井道口听得清清楚楚。”</p></div>
+      <div class="doc"><p class="doc-title">陈默（便利舱店员）</p>
+        <p>“店里的挂钟是机械的，不联网。它指着 04:31 的时候，苏晏从后门进来，躲进了后间。
+        她说原件被拿走了，副本在 17 号柜。”</p></div>
+      <p class="note">陈述只是陈述。终端不会告诉你谁在说谎——去和材料对。</p>
+    </section>
+
+    <!-- ===== 终端残片检索 ===== -->
+    <section class="view hidden" id="view-messages">
+      <h2>苏晏的终端残片 · 关键词检索</h2>
+      <p class="note">她的个人终端只抢救出一批碎片，无法按时间浏览，只能用<strong>关键词</strong>调取：
+      输入一个词，命中的碎片会浮出来。可以搜人名、物品、地点、设备，或者她会在意的词。
+      正文里出现过的词，同样算命中。</p>
+      <div class="answer-row">
+        <input id="search-word" placeholder="输入关键词，如：审计片" aria-label="检索关键词">
+        <button class="btn" id="btn-search">检索</button>
+      </div>
+      <p class="feedback" id="fb-search" role="status"></p>
+      <p class="hint hidden" id="search-hint"></p>
+      <div id="frag-list"></div>
+    </section>
+
+    <!-- ===== 恢复碎片 ===== -->
+    <section class="view hidden" id="view-fragments">
+      <h2>恢复碎片（加密）</h2>
+
+      <div class="doc">
+        <p class="doc-title">碎片 A —— suyan_memo.enc（苏晏的加密备忘）</p>
+        <div id="memo-lock">
+          <p>口令是<strong>一个名词</strong>。她把口令的线索留在别处了——也许在她自己的碎片里，也许在某份材料的第一行。</p>
+          <div class="answer-row">
+            <input id="memo-pass" placeholder="输入口令" aria-label="备忘口令">
+            <button class="btn" id="btn-memo">解密</button>
+            <button class="btn ghost" data-hint="memo">提示</button>
+          </div>
+          <p class="hint hidden" data-hint-text="memo"></p>
+          <p class="feedback" id="fb-memo" role="status"></p>
+        </div>
+        <div id="memo-open" class="hidden">
+          <p class="ok-line">■ 已解密 · 关键材料 2 / 3</p>
+          <p>“门禁报警的时候我就在保全室——我的卡却在同一分钟进了 B2。有人拿着我的第二张脸。<br>
+          保管格的压力记录我看过了：原件在第一遍 04:20 被拿走，前后只差几十秒，当晚再没有第二次进入。<br>
+          副本是我昨晚按规程做的例行备份，一直锁在保全室保险格里。出事之后，我把它带出来，放进 17 号柜，手写卡压在下面。<br>
+          如果我失联：先去问那个<strong>从不读墙钟的东西</strong>，它记得真正的时刻；
+          再去敲便利舱的后门——货运梯只响一次的话，上去的就是我。我若出得去，只会去陈默那儿。”</p>
+        </div>
+      </div>
+
+      <div class="doc">
+        <p class="doc-title">碎片 B —— B2 原始门禁日志（时序拼图锁）</p>
+        <div id="seq-lock">
+          <p>原始日志的索引被打乱了。修复组确认下面<strong>四件事都真实发生过</strong>，但顺序记录损坏。
+          请按<strong>真实发生的先后</strong>依次点选四张事件卡，再校验顺序——顺序对了，日志才会展开。</p>
+          <div class="seq-grid" id="seq-grid">
+            <button class="seq-card" data-ev="e2">尾号 205 运维车离场<br><span>出口水印显示 04:20</span></button>
+            <button class="seq-card" data-ev="e4">回滚指令在 OPS-03 上执行<br><span>第一遍墙钟 04:24</span></button>
+            <button class="seq-card" data-ev="e3">尾号 205 运维车入场<br><span>入场时刻 03:58</span></button>
+            <button class="seq-card" data-ev="e1">克隆卡打开 B2 冷档案库<br><span>第一遍墙钟 04:20</span></button>
+          </div>
+          <div class="btn-row">
+            <button class="btn" id="btn-seq">校验顺序</button>
+            <button class="btn ghost" id="btn-seq-reset">重选</button>
+            <button class="btn ghost" data-hint="seq">提示</button>
+          </div>
+          <p class="hint hidden" data-hint-text="seq"></p>
+          <p class="feedback" id="fb-seq" role="status"></p>
+        </div>
+        <div id="seq-open" class="hidden">
+          <p class="ok-line">■ 顺序成立 · 关键材料 3 / 3</p>
+          <pre>04:20:07（第一遍） B2 门禁 · 刷卡进入
+  卡 ID：苏晏-03   卡序列号：SU03-B
+04:20:07（第一遍） 保全室门禁 · 签到未离开
+  卡 ID：苏晏-03   卡序列号：SU03-A
+附注：当晚 B2 门禁进入记录仅此一次。
+卡务附注：苏晏名下仅发卡 SU03-A 一张。
+SU03-B 不在发卡名册中——它是一张克隆卡。</pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 双时间轴证据板 ===== -->
+    <section class="view hidden" id="view-timeline">
+      <h2>双时间轴证据板</h2>
+      <p>这块板子只做一件事：让你亲手把事件放回<strong>真实时间</strong>里。两条轴先看清楚——</p>
+      <div class="lanes" aria-label="双时间轴示意">
+        <div class="lane"><span class="tag">真实时间</span>
+          <span class="seg">04:17</span><span class="seg">04:20</span><span class="seg">04:24</span>
+          <span class="seg">04:27</span><span class="seg">04:31</span><span class="seg">→ 从不回头</span></div>
+        <div class="lane"><span class="tag">联网墙钟</span>
+          <span class="seg">04:17</span><span class="seg">04:20</span><span class="seg hot">04:24</span>
+          <span class="seg jump">↩ 跳回 04:17</span><span class="seg">04:20（ again ）</span><span class="seg">04:24</span></div>
+        <p class="note" style="margin:8px 0 0">同一块墙钟上的“04:20”，可能属于两个不同的真实时刻。把下面的卡排进真实时间时，先问每一张：它用的是哪一根轴？</p>
+      </div>
+      <h3>证据卡（只显示你已发现的）</h3>
+      <div class="tl-grid" id="tl-pool"></div>
+      <p class="note" id="tl-locked-note"></p>
+      <h3>你的重建（点卡片加入，点已排卡片可取下）</h3>
+      <div class="tl-strip" id="tl-strip"></div>
+      <div class="btn-row">
+        <button class="btn" id="btn-tl-check">索引比对</button>
+        <button class="btn ghost" id="btn-tl-wall">切换：墙钟视角</button>
+        <button class="btn ghost" id="btn-tl-clear">清空重建</button>
+      </div>
+      <p class="feedback" id="fb-tl" role="status"></p>
+    </section>
+
+    <!-- ===== 证据索引 ===== -->
+    <section class="view hidden" id="view-index">
+      <h2>证据索引</h2>
+      <p class="note">这里只登记材料的<strong>状态</strong>，不登记结论。哪些已经在你手里，哪些还锁着，一眼看清。</p>
+      <div id="idx-list"></div>
+      <h3>尚未解决的调查问题</h3>
+      <div class="doc"><p>· 克隆卡是谁、用什么制造的？<br>
+      · A-01 原件在哪一分钟、被哪次进入取走？<br>
+      · 回滚的双因子，属于谁？<br>
+      · 审计片原件的内容，和市政现行记录差在哪里？<br>
+      · 苏晏最后被确认的位置在哪里？证据能走到哪一步？</p></div>
+      <p class="note" id="idx-assoc">事件关联：尚未在证据板上建立。</p>
+    </section>
+
+    <!-- ===== 结案报告 ===== -->
+    <section class="view hidden" id="view-report">
+      <h2>结案报告 · 整份集中核对</h2>
+      <p class="note" id="report-status">每项研判由两部分组成：<strong>结论</strong>＋<strong>证据引用</strong>（只能引用你已经发现的材料，未发现的会标出来）。
+      提交前终端不评价任何一项；提交后整份一起核对，分三档：成立·证据充分 / 可能正确·证据不足 / 与证据冲突。
+      可以修改、可以重交。只有六项全部“成立·证据充分”，案件才会结案。</p>
+
+      <h3>研判一：这七分钟里，时间到底出了什么问题？</h3>
+      <div class="options" data-group="q1">
+        <button class="opt" data-t="q1a-8f3">全市时间停摆了七分钟，所有记录因此缺失一段</button>
+        <button class="opt" data-t="q1b-2c9">有人删除了七分钟的记录，时间本身正常流逝</button>
+        <button class="opt" data-t="q1c-7d1">联网墙钟被回滚了七分钟，同一段时间在记录里出现了两次</button>
+        <button class="opt" data-t="q1d-5e6">所有设备同时走慢了，七分钟被均匀地拉长了</button>
+      </div>
+      <div class="cite-box" data-cite="q1"></div>
+
+      <h3>研判二：停车场 #445（尾号 205）的真实离场时刻是？</h3>
+      <div class="answer-row"><input id="r-time" inputmode="numeric" maxlength="6" placeholder="例：05:06" aria-label="真实离场时刻"></div>
+      <div class="cite-box" data-cite="q2"></div>
+
+      <h3>研判三：触发回滚、并使用克隆卡取走审计片的人，是谁？</h3>
+      <div class="options" data-group="culprit">
+        <button class="opt" data-t="p-g-41x">顾衡</button>
+        <button class="opt" data-t="p-c-09m">陈默</button>
+        <button class="opt" data-t="p-z-77q">赵启明</button>
+        <button class="opt" data-t="p-s-23w">苏晏</button>
+      </div>
+      <div class="cite-box" data-cite="q3"></div>
+
+      <h3>研判四：顾衡的陈述被哪条证据击穿？</h3>
+      <div class="options" data-group="contra">
+        <button class="opt" data-t="c-b-84n">他名下根本没有车，座车记录是伪造的</button>
+        <button class="opt" data-t="c-a-61r">他的车并非真实 04:20 离场——真实离场在回滚触发之后，他当时仍在塔内</button>
+        <button class="opt" data-t="c-c-35k">OPS-03 其实不需要虹膜，任何人都能操作</button>
+        <button class="opt" data-t="c-d-92w">货运电梯当晚其实动过两次，与保安的说法冲突</button>
+      </div>
+      <div class="cite-box" data-cite="q4"></div>
+
+      <h3>研判五：根据现有证据，苏晏最后能够确认的下落是？</h3>
+      <div class="options" data-group="where">
+        <button class="opt" data-t="w-a-19e">她已经在当晚乘车离开了渚城</button>
+        <button class="opt" data-t="w-c-58b">04:31（机械挂钟）她进入了一层便利舱后间——这是她最后被确认的位置；之后去向，现有证据未及</button>
+        <button class="opt" data-t="w-b-44t">她被关在 B2 冷档案库里</button>
+        <button class="opt" data-t="w-d-67p">她当晚根本不在数据塔，陈述是编造的</button>
+      </div>
+      <div class="cite-box" data-cite="q5"></div>
+
+      <h3>研判六：被取走的原件是什么，为什么值得偷？</h3>
+      <div class="options" data-group="motive">
+        <button class="opt" data-t="m-b-28f">数据塔的备用授时密钥，可用于再次回滚全城墙钟</button>
+        <button class="opt" data-t="m-a-73d">原始审计片——它能证明顾衡篡改过滨江防洪闸的维护记录</button>
+        <button class="opt" data-t="m-c-91h">苏晏的私人备份盘，里面是她的辞职信与日记</button>
+        <button class="opt" data-t="m-d-55q">一笔未登记的现金，藏在冷档案库的保险格里</button>
+      </div>
+      <div class="cite-box" data-cite="q6"></div>
+
+      <div class="btn-row"><button class="btn" id="btn-report">提交结案报告（整份核对）</button></div>
+      <div id="report-result"></div>
+
+      <div id="finale" class="hidden">
+        <div class="finale-box">
+          <h3>结案陈词</h3>
+          <p>先说那天晚上的前夜：23:41，运维间的制卡机被 GH-01 号工牌开启，写出一张不存在于名册的卡——SU03-B。</p>
+          <p>04:20:07，这张卡刷开了 B2 冷档案库；24 秒后，A-01 保管格空了。当晚 B2 只进过这一次人。
+          同一分钟，苏晏本人正持着真卡站在保全室里。她看着报警，明白了：有人拿着她的第二张脸。</p>
+          <p>04:24:00，顾衡在 OPS-03 上以自己的虹膜与工牌触发回滚 420 秒——不是为了偷东西，东西已经偷完了；
+          是为了让全城的墙钟把这晚说乱。他赌的是：当 04:20 出现两次，谁也分不清哪一次是真的。
+          他算漏了不读墙钟的东西：票卡里的单调计时器说，他的车真实离场于 <strong>04:27</strong>，在回滚之后。他当时就在塔内。</p>
+          <p>他要销毁的原始审计片上写着：滨江防洪闸 3 号闸阀芯，裂纹，未更换，签字栏空白。
+          而市政系统里躺着的现行版本写着“检查合格”，签着他的名字，日期回填在一年前汛期的伤口上。
+          他不知道副本按规程早就存在，更不知道副本的哈希还登记在保全簿里——销毁原件，销毁不了内容。</p>
+          <p>苏晏活着走出了那座塔：货运梯只响了一次，机械挂钟指着 04:31，她进了便利舱后间。
+          那是她<strong>最后被确认的位置</strong>。再往后，她去了哪里，终端里没有任何材料能够回答——
+          这一次，缺席的记录不是谎言，是她留给自己的路。</p>
+          <div class="seal">结案 · 0417-0427</div>
+          <p class="verdict">时间没有消失过。说谎的从来不是时间，是看着墙钟说话的人。</p>
+        </div>
+      </div>
+      <div class="btn-row"><button class="btn ghost" id="btn-reset">清除全部进度，重新调查</button></div>
+    </section>
+
+  </main>
+</div>
+
+<footer class="foot">原创悬疑 ARG《04:17 · 七分钟重播》 v3 · 自由探索版 · 判定以 SHA-256 哈希校验（客户端校验只为体验，不构成防作弊）· 查看源码等于提前拆阅结案陈词，请只相信证据</footer>
+
+<script>
+"use strict";
+/* 《04:17 · 七分钟重播》v3 自由探索版
+   判定仅以 SHA-256 哈希校验（Web Crypto 优先，缺失时用内置纯 JS 实现回退）。
+   客户端校验只为游玩体验，不构成防作弊——这一点如实写在页脚。 */
+const HASH = {
+  code:    "e4782cfc2b471cd4e24686f692188416d8a313cccb62679dc08c348447c2507b",
+  pass:    "7116ee77844e2dadaa1d70ca054feca88e4c8fb8f2f437499f40c1ccd5d3fc5f",
+  seq:     "9e41806aa4399769c6d3c5acb78ce796596780d8ff361f883bad37f66952df79",
+  q1:      "7691320f6a991d3ec7aa264cbdf12ae49e19b5d68f0d855b4b162f9a009fe713",
+  culprit: "740387eac428a02387eec17bf42f4d886df55b65e3ac26189764f15925950c0d",
+  contra:  "11c69a840e03f2e7c40f29874551ebc5de0ffbed4dd7a405790970dacaa2e035",
+  where:   "30c9d39c81b563050729c03d81c7c0b3002b7751cced2a417189b078e33b890a",
+  motive:  "ceae101aaa078e14d8b14724ccecae16a54931f776808bed8f05f16330266259"
+};
+const HINTS = {
+  locker: ["码不在柜子上，在停车场日志里。",
+           "#445 的入场时刻＋票面时长，等于它的真实离场时刻。把那个时刻去掉冒号，就是四位码。"],
+  memo:   ["去「苏晏的终端残片」里搜一搜“口令”。",
+           "从不读墙钟、只管自己往前走的东西——停车场日志的说明里，第一行就写了它的名字，五个字。"],
+  seq:    ["先排死时刻：03:58 入场一定最早；第一遍的 04:20 在 04:24 之前。",
+           "只剩离场卡的位置是活的：它的水印是假的。用停车场日志把真实时刻算出来——它落在回滚之后。"]
+};
+const FRAGS = [
+  { id: "M-02", cat: "物品", keys: ["审计片", "原件", "副本", "A-01", "编号"], text: "例行巡检时我数过，冷档案库的审计片一共三块，原件编号 A-01。谁要是动它，保全规程要求我先保副本——我一直照做。" },
+  { id: "M-05", cat: "人物", keys: ["顾衡", "主管", "运维", "权限"], text: "主管今晚第三次路过保全室，问的都是回滚演练的权限。他说只是例行确认。可那道命令，三年没人动过了。" },
+  { id: "M-07", cat: "物品", keys: ["克隆卡", "第二张", "卡", "假卡", "复制"], text: "我的卡尾号是 03，只发过一张。可门禁报警跳出来的，也是 03。这个世界上，不该有第二张 03。" },
+  { id: "M-09", cat: "异常", keys: ["墙钟", "挂钟", "时钟", "时间", "钟表", "表"], text: "别信墙钟。它是全城最听话的东西——谁都能让它改口。" },
+  { id: "M-11", cat: "异常", keys: ["口令", "密码", "备忘"], text: "备忘的口令，我设成了那个从不读墙钟、只管自己往前走的东西的名字。五个字。它今晚也在停车场值班。" },
+  { id: "M-13", cat: "地点", keys: ["陈默", "便利舱", "后门", "后间", "店员"], text: "陈默的后间有一张行军床，她说那是给值夜的人留的。我希望永远用不上它。" },
+  { id: "M-15", cat: "事件", keys: ["电梯", "货运", "货运梯", "计数器"], text: "货运梯的计数器是机械的。它响一次，就是一次，不会因为谁改了墙钟，就变成零次。" },
+  { id: "M-17", cat: "事件", keys: ["回滚", "演练", "虹膜", "双因子"], text: "回滚演练的命令只能在 OPS-03 上按，虹膜加卡，缺一不可。当晚的虹膜名单——人事表上写着呢。" },
+  { id: "M-19", cat: "物品", keys: ["防洪闸", "滨江", "汛期", "维护", "记录"], text: "A-01 里存的是滨江防洪闸的维护原始记录。去年汛期那次险情之后，有人很希望这份记录“不存在”。" },
+  { id: "M-21", cat: "事件", keys: ["制卡", "制卡机", "读卡头", "运维间"], text: "运维间的制卡机上周检修过，主管说读卡头老化。那台机器平时落灰——半夜里，谁会去开它呢？" }
+];
+const MATS = [
+  { id: "park",   t: "停车场抓拍日志", src: "停车场" },
+  { id: "gate",   t: "门禁摘要（市政导出版）", src: "数据塔" },
+  { id: "press",  t: "A-01 保管格压力传感记录", src: "数据塔" },
+  { id: "card",   t: "卡务制卡机本地日志", src: "数据塔" },
+  { id: "city",   t: "市政维护现行记录", src: "数据塔" },
+  { id: "people", t: "权限表 · 值班表 · 三份陈述", src: "人事" },
+  { id: "elev",   t: "货运电梯运行记录", src: "数据塔" },
+  { id: "msgs",   t: "苏晏的终端残片", src: "终端检索", disc: () => S.found.length > 0 },
+  { id: "locker", t: "17 号柜材料（手写卡 / 元数据 / 审计片摘录）", src: "便利舱", disc: () => S.u.locker },
+  { id: "memo",   t: "苏晏的加密备忘", src: "恢复碎片", disc: () => S.u.memo },
+  { id: "raw",    t: "B2 原始门禁日志", src: "恢复碎片", disc: () => S.u.raw }
+];
+const TLC = [
+  { id: "tc0", rank: 0, need: null, title: "制卡机写入一张空白卡", det: "05-16 23:41 · 序列号 SU03-B · 操作工牌 GH-01（制卡机日志）", wall: "异常发生之前，墙钟与真实时间一致" },
+  { id: "tc1", rank: 1, need: null, title: "尾号 205 运维车入场", det: "03:58 · 停车场入口票卡打印", wall: "异常发生之前，墙钟与真实时间一致" },
+  { id: "tc2", rank: 2, need: "raw", title: "克隆卡刷开 B2 冷档案库", det: "第一遍墙钟 04:20:07 · 卡序列号 SU03-B（原始日志）", wall: "墙钟视角：04:20（第一遍）" },
+  { id: "tc3", rank: 3, need: null, title: "A-01 保管格压力归零", det: "第一遍 04:20:31 · 压力传感本地记录", wall: "墙钟视角：04:20（第一遍），与上一张相差 24 秒" },
+  { id: "tc4", rank: 4, need: "locker", title: "OPS-03 执行回滚 420 秒", det: "第一遍墙钟 04:24:00 · 审计片副本元数据", wall: "墙钟视角：04:24 → 跳回 04:17，分界点在此" },
+  { id: "tc5", rank: 5, need: null, title: "尾号 205 运维车离场", det: "出口水印 04:20 · 票面计时 29 分钟（停车场日志）", wall: "墙钟视角：04:20（第二遍）——与克隆卡那张同为 04:20，却不是同一分钟" },
+  { id: "tc6", rank: 6, need: null, title: "货运电梯 B2 → 1 层，运行一次", det: "电梯本地计数 · 04:17–04:31 窗口内仅此一次", wall: "不读墙钟：计数器只认次数" },
+  { id: "tc7", rank: 7, need: null, title: "苏晏进入便利舱后间", det: "机械挂钟 04:31 · 陈默陈述", wall: "机械挂钟不联网：它指的 04:31 就是真实时间" }
+];
+const REQ = {
+  q1: { any: ["park", "locker"], min: 1 },
+  q2: { must: ["park"] },
+  q3: { any: ["locker", "card", "raw", "people", "park"], min: 2 },
+  q4: { must: ["park"] },
+  q5: { must: ["people"] },
+  q6: { any: ["locker", "msgs19"], min: 1 }
+};
+
+/* —— SHA-256：Web Crypto 优先，纯 JS 回退 —— */
+const SHAK = [0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
+function sha256Bytes(bytes) {
+  const rotr = (x, n) => (x >>> n) | (x << (32 - n));
+  let h0=0x6a09e667,h1=0xbb67ae85,h2=0x3c6ef372,h3=0xa54ff53a,h4=0x510e527f,h5=0x9b05688c,h6=0x1f83d9ab,h7=0x5be0cd19;
+  const l = bytes.length;
+  const withPad = new Uint8Array((((l + 8) >> 6) + 1) << 6);
+  withPad.set(bytes); withPad[l] = 0x80;
+  const dv = new DataView(withPad.buffer);
+  dv.setUint32(withPad.length - 4, l * 8, false);
+  const w = new Int32Array(64);
+  for (let blk = 0; blk < withPad.length; blk += 64) {
+    for (let i = 0; i < 16; i++) w[i] = dv.getInt32(blk + i * 4, false);
+    for (let i = 16; i < 64; i++) {
+      const s0 = rotr(w[i-15], 7) ^ rotr(w[i-15], 18) ^ (w[i-15] >>> 3);
+      const s1 = rotr(w[i-2], 17) ^ rotr(w[i-2], 19) ^ (w[i-2] >>> 10);
+      w[i] = (w[i-16] + s0 + w[i-7] + s1) | 0;
+    }
+    let a=h0,b=h1,c=h2,d=h3,e=h4,f=h5,g=h6,hh=h7;
+    for (let i = 0; i < 64; i++) {
+      const S1 = rotr(e, 6) ^ rotr(e, 11) ^ rotr(e, 25);
+      const ch = (e & f) ^ (~e & g);
+      const t1 = (hh + S1 + ch + SHAK[i] + w[i]) | 0;
+      const S0 = rotr(a, 2) ^ rotr(a, 13) ^ rotr(a, 22);
+      const mj = (a & b) ^ (a & c) ^ (b & c);
+      const t2 = (S0 + mj) | 0;
+      hh=g; g=f; f=e; e=(d+t1)|0; d=c; c=b; b=a; a=(t1+t2)|0;
+    }
+    h0=(h0+a)|0; h1=(h1+b)|0; h2=(h2+c)|0; h3=(h3+d)|0; h4=(h4+e)|0; h5=(h5+f)|0; h6=(h6+g)|0; h7=(h7+hh)|0;
+  }
+  return [h0,h1,h2,h3,h4,h5,h6,h7].map(h => (h >>> 0).toString(16).padStart(8, "0")).join("");
+}
+async function hashText(text) {
+  const bytes = new TextEncoder().encode(text);
+  if (window.crypto && crypto.subtle) {
+    try {
+      const buf = await crypto.subtle.digest("SHA-256", bytes);
+      return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, "0")).join("");
+    } catch (e) { /* 落回纯 JS 实现 */ }
+  }
+  return sha256Bytes(bytes);
+}
+const digits4 = (v) => (String(v).replace(/\D/g, "").padStart(4, "0")).slice(-4);
+
+/* —— 状态（含 v2 → v3 迁移） —— */
+const KEY3 = "arg0417-v3", KEY2 = "arg0417-v2";
+let S = { u: { locker: false, memo: false, raw: false }, found: [], notes: "", best: 0, tl: [], tlDone: false, cite: {} };
+try {
+  const v3 = JSON.parse(localStorage.getItem(KEY3));
+  if (v3) Object.assign(S, v3);
+  else {
+    const v2 = JSON.parse(localStorage.getItem(KEY2));
+    if (v2) { // 安全迁移：只搬运解锁状态、已发现碎片与笔记
+      if (v2.u) S.u = { locker: !!v2.u.locker, memo: !!v2.u.memo, raw: !!v2.u.raw };
+      if (Array.isArray(v2.found)) S.found = v2.found.filter(id => FRAGS.some(f => f.id === id));
+      if (typeof v2.notes === "string") S.notes = v2.notes;
+    }
+  }
+} catch (e) {}
+const $ = (s) => document.querySelector(s);
+const $$ = (s) => [...document.querySelectorAll(s)];
+function save() { try { localStorage.setItem(KEY3, JSON.stringify(S)); } catch (e) {} }
+function feedback(id, ok, msg) {
+  const el = $(id); if (!el) return;
+  el.textContent = msg;
+  el.className = "feedback " + (ok === true ? "ok" : ok === "mid" ? "mid" : "err");
+}
+function matCount() { return Object.values(S.u).filter(Boolean).length; }
+function discovered(m) { return m.disc ? m.disc() : true; }
+</script>
+
+<script>
+"use strict";
+/* —— 渲染 —— */
+function render() {
+$("#mat-count").textContent = "关键材料 " + matCount() + " / 3";
+$("#home-status").textContent = "关键材料解封进度：" + matCount() + " / 3 · 终端碎片 " +
+S.found.length + " / " + FRAGS.length + (S.best? " · 结案报告历史最佳（成立·充分）：" + S.best + " / 6": "");
+$("#locker-lock").classList.toggle("hidden", S.u.locker);
+$("#locker-open").classList.toggle("hidden",!S.u.locker);
+$("#memo-lock").classList.toggle("hidden", S.u.memo);
+$("#memo-open").classList.toggle("hidden",!S.u.memo);
+$("#seq-lock").classList.toggle("hidden", S.u.raw);
+$("#seq-open").classList.toggle("hidden",!S.u.raw);
+renderFrags(); renderTimeline(); renderIndex(); renderCites();
+}
+function goto(view) {
+$$(".view").forEach(v => v.classList.add("hidden"));
+const el = $("#view-" + view); if (el) el.classList.remove("hidden");
+$$(".nav").forEach(n => n.classList.toggle("on", n.dataset.goto === view));
+window.scrollTo({ top: 0, behavior: "smooth"});
+}
+document.addEventListener("click", (e) => {
+const g = e.target.closest("[data-goto]");
+if (g) goto(g.dataset.goto);
+});
+const notesEl = $("#notes");
+notesEl.value = S.notes || "";
+notesEl.addEventListener("input", () => { S.notes = notesEl.value; save();});
+
+/* —— 三把锁 —— */
+$("#btn-locker").addEventListener("click", async () => {
+const v = $("#locker-code").value.trim();
+if (!v) return feedback("#fb-locker", false, "先输入四位解封码。");
+if ((await hashText(digits4(v))) === HASH.code) { S.u.locker = true; save(); render();}
+else feedback("#fb-locker", false, "解封失败。封条纹丝不动——这个码只认一个时刻。");
+});
+$("#btn-memo").addEventListener("click", async () => {
+const v = $("#memo-pass").value.trim();
+if (!v) return feedback("#fb-memo", false, "先输入口令。");
+if ((await hashText(v)) === HASH.pass) { S.u.memo = true; save(); render();}
+else feedback("#fb-memo", false, "口令不对。文件保持沉默。");
+});
+let picked = [];
+function renderSeq() {
+$$(".seq-card").forEach(c => {
+const i = picked.indexOf(c.dataset.ev);
+c.classList.toggle("picked", i >= 0);
+let ord = c.querySelector(".ord");
+if (i >= 0) {
+if (!ord) { ord = document.createElement("span"); ord.className = "ord"; c.appendChild(ord);}
+ord.textContent = i + 1;
+} else if (ord) ord.remove();
+});
+}
+$("#seq-grid").addEventListener("click", (e) => {
+const card = e.target.closest(".seq-card"); if (!card || S.u.raw) return;
+const ev = card.dataset.ev;
+picked = picked.includes(ev)? picked.filter(x => x!== ev): [...picked, ev];
+renderSeq();
+});
+$("#btn-seq-reset").addEventListener("click", () => { picked = []; renderSeq(); feedback("#fb-seq", false, "");});
+$("#btn-seq").addEventListener("click", async () => {
+if (picked.length!== 4) return feedback("#fb-seq", false, "先把四张事件卡全部排好顺序。");
+if ((await hashText(picked.join(","))) === HASH.seq) { S.u.raw = true; save(); render();}
+else feedback("#fb-seq", false, "顺序不成立，日志索引拒绝展开。再对一遍每张卡背后的时刻——有一张卡的时间是假的。");
+});
+
+/* —— 关键词检索（同义词 + 正文命中 + 渐进提示） —— */
+let failStreak = 0;
+function renderFrags() {
+const box = $("#frag-list");
+box.innerHTML = "";
+FRAGS.filter(f => S.found.includes(f.id)).forEach(f => {
+const d = document.createElement("div");
+d.className = "doc frag";
+const t = document.createElement("p"); t.className = "doc-title"; t.textContent = "碎片 " + f.id;
+const b = document.createElement("p"); b.textContent = "“" + f.text + "”";
+d.appendChild(t); d.appendChild(b); box.appendChild(d);
+});
+}
+$("#btn-search").addEventListener("click", () => {
+const q = $("#search-word").value.trim();
+const hintEl = $("#search-hint");
+if (!q) return feedback("#fb-search", false, "先输入一个关键词。");
+const hit = (f) => f.keys.some(k => q.includes(k) || k.includes(q)) || (q.length >= 2 && f.text.includes(q));
+const hits = FRAGS.filter(f =>!S.found.includes(f.id) && hit(f));
+if (hits.length) {
+hits.forEach(f => S.found.push(f.id));
+failStreak = 0; hintEl.classList.add("hidden");
+save(); render();
+feedback("#fb-search", true, "调出新碎片 " + hits.length + " 条（累计已调出 " + S.found.length + " / " + FRAGS.length + " 条）。");
+} else {
+failStreak++;
+const any = FRAGS.some(f => hit(f));
+feedback("#fb-search", false, any? "这个词命中的碎片都已经调出来了。": "没有命中。");
+if (!any && failStreak >= 4) {
+const cats = [...new Set(FRAGS.filter(f =>!S.found.includes(f.id)).map(f => f.cat))];
+hintEl.textContent = "方向提示：仍未调出的碎片类别——" + cats.join(" / ") +
+"。试着想：她的岗位会碰到哪些设备、哪条江、哪种卡？把词拆短一点，也算命中。";
+hintEl.classList.remove("hidden");
+} else if (!any && failStreak >= 2) {
+hintEl.textContent = "方向提示：碎片按分类存放。人名不一定是全名，物品也不一定是全称。";
+hintEl.classList.remove("hidden");
+}
+}
+});
+$("#search-word").addEventListener("keydown", (e) => { if (e.key === "Enter") $("#btn-search").click();});
+
+/* —— 提示 —— */
+const hintLevel = {};
+$$("[data-hint]").forEach(btn => btn.addEventListener("click", () => {
+const k = btn.dataset.hint;
+hintLevel[k] = Math.min((hintLevel[k] || 0) + 1, HINTS[k].length);
+const box = document.querySelector('[data-hint-text="' + k + '"]');
+box.textContent = "提示 " + hintLevel[k] + "：" + HINTS[k][hintLevel[k] - 1];
+box.classList.remove("hidden");
+}));
+
+/* —— 双时间轴证据板 —— */
+let wallMode = false;
+function tlAvailable(c) { return!c.need || S.u[c.need];}
+function renderTimeline() {
+const pool = $("#tl-pool"); pool.innerHTML = "";
+let locked = 0;
+TLC.forEach(c => {
+if (!tlAvailable(c)) { locked++; return;}
+const b = document.createElement("button");
+b.className = "tl-card" + (S.tl.includes(c.id)? " placed": "");
+const t = document.createElement("span"); t.textContent = c.title;
+const d = document.createElement("small"); d.textContent = wallMode && c.wall? c.wall: c.det;
+b.appendChild(t); b.appendChild(d);
+b.addEventListener("click", () => {
+if (!S.tl.includes(c.id)) { S.tl.push(c.id); S.tlDone = false; save(); render();}
+});
+pool.appendChild(b);
+});
+$("#tl-locked-note").textContent = locked?
+"还有 " + locked + " 张证据卡对应的材料尚未解封——它们存在，但你还没有找到打开它们的方式。": "";
+const strip = $("#tl-strip"); strip.innerHTML = "";
+if (!S.tl.length) {
+const p = document.createElement("p"); p.className = "note"; p.textContent = "（空）从上方点选证据卡，把它们按真实发生的先后排进来。";
+strip.appendChild(p);
+}
+S.tl.forEach((id, i) => {
+const c = TLC.find(x => x.id === id); if (!c) return;
+const b = document.createElement("button");
+b.className = "tl-item";
+const n = document.createElement("span"); n.className = "n"; n.textContent = i + 1;
+const t = document.createElement("span"); t.textContent = c.title;
+const d = document.createElement("small"); d.textContent = wallMode && c.wall? c.wall: c.det;
+b.appendChild(n); b.appendChild(t); b.appendChild(d);
+b.addEventListener("click", () => { S.tl = S.tl.filter(x => x!== id); S.tlDone = false; save(); render();});
+strip.appendChild(b);
+});
+}
+$("#btn-tl-clear").addEventListener("click", () => { S.tl = []; S.tlDone = false; save(); render(); feedback("#fb-tl", false, "");});
+$("#btn-tl-wall").addEventListener("click", (e) => {
+wallMode =!wallMode;
+e.target.textContent = wallMode? "切换：来源视角": "切换：墙钟视角";
+render();
+});
+$("#btn-tl-check").addEventListener("click", () => {
+if (!S.tl.length) return feedback("#fb-tl", false, "先把至少一张卡排进重建区。");
+const expected = [...TLC].sort((a, b) => a.rank - b.rank).map(c => c.id)
+.filter(id => S.tl.includes(id));
+const correct = S.tl.filter((id, i) => expected[i] === id).length;
+S.tlDone = S.tl.length === TLC.length && correct === TLC.length;
+save(); renderIndex();
+if (S.tlDone) feedback("#fb-tl", true, "索引比对：全部 " + TLC.length + " 张事件卡都回到了真实时间线上的正确位置。");
+else feedback("#fb-tl", "mid", "索引比对：已放置 " + S.tl.length + " 张，其中 " + correct + " 张与真实顺序一致（按已放置的卡计）。终端不说是哪几张。");
+});
+
+/* —— 证据索引 —— */
+function renderIndex() {
+const box = $("#idx-list"); if (!box) return;
+box.innerHTML = "";
+MATS.forEach(m => {
+const row = document.createElement("div"); row.className = "idx-row";
+const name = document.createElement("span"); name.textContent = m.t + "（" + m.src + "）";
+const st = document.createElement("span");
+const got = discovered(m);
+const locked = (m.id === "locker" &&!S.u.locker) || (m.id === "memo" &&!S.u.memo) || (m.id === "raw" &&!S.u.raw);
+st.className = "st " + (got? "got": locked? "lock": "");
+st.textContent = got? "已发现": locked? "已定位 · 未解封": "未发现";
+row.appendChild(name); row.appendChild(st); box.appendChild(row);
+});
+$("#idx-assoc").textContent = "事件关联：已在证据板上排定 " + S.tl.length + " / " + TLC.length + " 张事件卡" +
+(S.tlDone? "，且全部回到正确位置。": "。");
+}
+
+/* —— 结案报告：证据引用 —— */
+function renderCites() {
+$$(".cite-box").forEach(box => {
+const q = box.dataset.cite;
+box.innerHTML = "";
+const title = document.createElement("p"); title.className = "cite-title";
+title.textContent = "证据引用（点选支撑本项结论的材料，只能引用已发现的）：";
+box.appendChild(title);
+const wrap = document.createElement("div"); wrap.className = "chips";
+MATS.forEach(m => {
+const got = discovered(m);
+const chip = document.createElement("button");
+chip.className = "chip" + ((S.cite[q] || []).includes(m.id)? " sel": "");
+chip.textContent = m.t + (got? "": "（未发现）");
+chip.disabled =!got;
+chip.addEventListener("click", () => {
+const arr = S.cite[q] || (S.cite[q] = []);
+const i = arr.indexOf(m.id);
+if (i >= 0) arr.splice(i, 1); else arr.push(m.id);
+save(); renderCites();
+});
+wrap.appendChild(chip);
+});
+box.appendChild(wrap);
+});
+}
+const sel = {};
+$$(".options").forEach(group => group.addEventListener("click", (e) => {
+const btn = e.target.closest(".opt"); if (!btn) return;
+group.querySelectorAll(".opt").forEach(b => b.classList.remove("sel"));
+btn.classList.add("sel");
+sel[group.dataset.group] = btn.dataset.t;
+}));
+function evOk(q) {
+const cited = S.cite[q] || [];
+const r = REQ[q];
+const eff = cited.map(id => (id === "msgs" && q === "q6")
+? (S.found.includes("M-19")? "msgs19": "msgs-unrelated"): id);
+if (r.must) return r.must.every(m => cited.includes(m));
+return eff.filter(id => r.any.includes(id)).length >= (r.min || 1);
+}
+$("#btn-report").addEventListener("click", async () => {
+const t = $("#r-time").value.trim();
+const result = $("#report-result");
+if (!sel.q1 ||!sel.culprit ||!sel.contra ||!sel.where ||!sel.motive ||!t) {
+result.innerHTML = "";
+const p = document.createElement("p"); p.className = "feedback err";
+p.textContent = "报告还没填完——六项结论一项都不能空着（证据引用可以空着交，但会判证据不足）。";
+result.appendChild(p); return;
+}
+const defs = [
+["研判一 · 异常的性质", "q1", (await hashText(sel.q1)) === HASH.q1],
+["研判二 · #445 的真实离场时刻", "q2", (await hashText(digits4(t))) === HASH.code],
+["研判三 · 触发回滚并取走审计片的人", "q3", (await hashText(sel.culprit)) === HASH.culprit],
+["研判四 · 击穿顾衡陈述的证据", "q4", (await hashText(sel.contra)) === HASH.contra],
+["研判五 · 苏晏最后能够确认的下落", "q5", (await hashText(sel.where)) === HASH.where],
+["研判六 · 被取走的原件", "q6", (await hashText(sel.motive)) === HASH.motive]
+];
+const rows = defs.map(([label, q, conc]) => {
+const ev = evOk(q);
+return { label, conc, ev, full: conc && ev};
+});
+const full = rows.filter(r => r.full).length;
+S.best = Math.max(S.best, full); save(); render();
+result.innerHTML = "";
+const head = document.createElement("p");
+head.className = "feedback " + (full === 6? "ok": "err");
+head.textContent = "整份核对完毕：" + full + " / 6 项「成立 · 证据充分」。" +
+"调查完整度：关键材料 " + matCount() + " / 3，终端碎片 " + S.found.length + " / " + FRAGS.length +
+"，时间轴 " + S.tl.length + " / " + TLC.length + "。";
+result.appendChild(head);
+rows.forEach(r => {
+const d = document.createElement("div");
+d.className = "result-item " + (r.full? "ok": r.conc? "mid": "no");
+d.textContent = (r.full? "✓ 结论成立，证据充分 —— "
+: r.conc? "△ 结论可能正确，但证据不足 —— "
+: "✗ 结论与现有证据冲突 —— ") + r.label;
+result.appendChild(d);
+});
+if (full!== 6) {
+const p = document.createElement("p"); p.className = "note";
+p.textContent = "「证据不足」不是答错——是这项结论还没有被你发现的材料撑住。回到终端里补齐它，再改报告重交。";
+result.appendChild(p);
+}
+$("#finale").classList.toggle("hidden", full!== 6);
+if (full === 6) $("#finale").scrollIntoView({ behavior: "smooth"});
+});
+$("#btn-reset").addEventListener("click", () => {
+localStorage.removeItem(KEY3); localStorage.removeItem(KEY2); location.reload();
+});
+
+/* —— 标题时钟故障动画（遵循减少动态偏好） —— */
+(function () {
+const el = $("#title-clock"); if (!el) return;
+if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+setInterval(() => {
+el.textContent = "04:24"; el.classList.add("glitching");
+setTimeout(() => { el.textContent = "04:17"; el.classList.remove("glitching");}, 340);
+}, 5200);
+})();
+
+render();
+</script>
+</body>
+</html>
