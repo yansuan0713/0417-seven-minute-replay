@@ -590,13 +590,17 @@ const TLC = [
   { id: "tc6", rank: 6, need: null, title: "货运电梯 B2 → 1 层，运行一次", det: "电梯本地计数 · 04:17–04:31 窗口内仅此一次", wall: "不读墙钟：计数器只认次数" },
   { id: "tc7", rank: 7, need: null, title: "苏晏进入便利舱后间", det: "机械挂钟 04:31 · 陈默陈述", wall: "机械挂钟不联网：它指的 04:31 就是真实时间" }
 ];
+/* v3.1 判定标定：让"结论＋证据引用"真正绑住简报承诺的三份关键材料。
+   每问区分「必须项 must」与「备选项 any/min」，不再使用不存在的合成 id；
+   碎片路径改为显式的 frag 门槛（引用「终端残片」须已调出该碎片）。
+   标定依据：每一问引用的是"真正能证明该结论的那份材料"，而不是"开局就能用的那份"。 */
 const REQ = {
-  q1: { any: ["park", "locker"], min: 1 },
-  q2: { must: ["park"] },
-  q3: { any: ["locker", "card", "raw", "people", "park"], min: 2 },
-  q4: { must: ["park"] },
-  q5: { must: ["people"] },
-  q6: { any: ["locker", "msgs19"], min: 1 }
+  q1: { must: ["park"],            any: ["locker", "gate"],           min: 1 },  // 时间异常的性质：票卡计时器 vs 水印 + 回滚执行记录/门禁矛盾
+  q2: { must: ["park"] },                                                     // #445 真实离场时刻
+  q3: { must: ["raw", "locker"],   any: ["card", "people", "press"],  min: 1 },  // 触发回滚并取走原件的人：原始日志(克隆卡) + OPS-03 双因子 + 识别材料
+  q4: { must: ["park"],            any: ["people"],                   min: 1 },  // 击穿顾衡陈述：票面计时 + 陈述本身
+  q5: { must: ["people", "memo"],  any: ["elev", "raw"],              min: 1 },  // 苏晏最后位置：陈默陈述 + 她的备忘意图 + 货运梯/日志佐证
+  q6: { must: ["locker"],          any: ["city", "msgs"],             min: 1, frag: "M-19" } // 原件与动机：副本内容 vs 市政现行记录
 };
 
 /* —— SHA-256：Web Crypto 优先，纯 JS 回退 —— */
@@ -643,9 +647,11 @@ async function hashText(text) {
 }
 const digits4 = (v) => (String(v).replace(/\D/g, "").padStart(4, "0")).slice(-4);
 
-/* —— 状态（含 v2 → v3 迁移） —— */
+/* —— 状态（含 v2 → v3 迁移） ——
+   v3.1b：结案报告的选择（sel）、研判二时刻（rtime）与"案件已结"（closed）也纳入存档。
+   旧存档缺这三个字段时沿用上面的默认值；类型被写坏时由 restoreReport() 兜住。 */
 const KEY3 = "arg0417-v3", KEY2 = "arg0417-v2";
-let S = { u: { locker: false, memo: false, raw: false }, found: [], notes: "", best: 0, tl: [], tlDone: false, cite: {} };
+let S = { u: { locker: false, memo: false, raw: false }, found: [], notes: "", best: 0, tl: [], tlDone: false, cite: {}, sel: {}, rtime: "", closed: false };
 try {
   const v3 = JSON.parse(localStorage.getItem(KEY3));
   if (v3) Object.assign(S, v3);
@@ -658,6 +664,10 @@ try {
     }
   }
 } catch (e) {}
+/* v3.1b：升级存档兼容——在旧版本里已经拿到 6/6 的玩家，其存档没有 closed 字段，
+   这里按已有的 best 推导出来，免得他们必须在新版本里再赢一次才能回看结案陈词。
+   （best===6 意味着确实曾整份成立；推导只在载入时进行，初始化阶段不写存储。） */
+if (S.best === 6 && S.closed !== true) S.closed = true;
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
 function save() { try { localStorage.setItem(KEY3, JSON.stringify(S)); } catch (e) {} }
@@ -673,6 +683,24 @@ function discovered(m) { return m.disc ? m.disc() : true; }
 <script>
 "use strict";
 /* —— 渲染 —— */
+/* v3.1b：把结案报告的界面恢复成离开时的样子。
+   存档里的 S.sel / S.rtime / S.closed 是唯一来源；这里先对 S.sel 取快照，
+   避免与模块级 sel 对象互相清空（两者一旦同一引用，清空 sel 就会把存档一起清掉）。 */
+function restoreReport() {
+const saved = (S.sel && typeof S.sel === "object" && !Array.isArray(S.sel)) ? { ...S.sel } : {};
+Object.keys(sel).forEach(k => delete sel[k]);
+$$(".options").forEach(group => {
+const g = group.dataset.group;
+group.querySelectorAll(".opt").forEach(b => {
+const on = saved[g] === b.dataset.t;
+b.classList.toggle("sel", on);
+if (on) sel[g] = saved[g];
+});
+});
+const timeEl = $("#r-time");
+if (timeEl) timeEl.value = (typeof S.rtime === "string") ? S.rtime : "";
+$("#finale").classList.toggle("hidden", S.closed !== true);
+}
 function render() {
 $("#mat-count").textContent = "关键材料 " + matCount() + " / 3";
 $("#home-status").textContent = "关键材料解封进度：" + matCount() + " / 3 · 终端碎片 " +
@@ -683,7 +711,7 @@ $("#memo-lock").classList.toggle("hidden", S.u.memo);
 $("#memo-open").classList.toggle("hidden",!S.u.memo);
 $("#seq-lock").classList.toggle("hidden", S.u.raw);
 $("#seq-open").classList.toggle("hidden",!S.u.raw);
-renderFrags(); renderTimeline(); renderIndex(); renderCites();
+renderFrags(); renderTimeline(); renderIndex(); renderCites(); restoreReport();
 }
 function goto(view) {
 $$(".view").forEach(v => v.classList.add("hidden"));
@@ -698,6 +726,15 @@ if (g) goto(g.dataset.goto);
 const notesEl = $("#notes");
 notesEl.value = S.notes || "";
 notesEl.addEventListener("input", () => { S.notes = notesEl.value; save();});
+
+/* —— v3.1b：结案报告的选择与时刻也进存档 ——
+   用文档级事件委托捕获选项点击（此时 .options 上的处理器已按冒泡顺序更新过 sel），
+   这样不必改动选项处理器本身；存的是快照，避免与模块级 sel 共享引用后被回填逻辑清空。 */
+document.addEventListener("click", (e) => {
+if (e.target.closest(".opt")) { S.sel = { ...sel }; save(); }
+});
+const rtimeEl = $("#r-time");
+rtimeEl.addEventListener("input", () => { S.rtime = rtimeEl.value; save(); });
 
 /* —— 三把锁 —— */
 $("#btn-locker").addEventListener("click", async () => {
@@ -754,8 +791,24 @@ $("#btn-search").addEventListener("click", () => {
 const q = $("#search-word").value.trim();
 const hintEl = $("#search-hint");
 if (!q) return feedback("#fb-search", false, "先输入一个关键词。");
-const hit = (f) => f.keys.some(k => q.includes(k) || k.includes(q)) || (q.length >= 2 && f.text.includes(q));
+/* v3.1 检索完整性：hit 只做「一个词」的匹配——
+   查询被某个关键词包含（允许把词拆短），或整句出现在碎片正文里。
+   这里刻意不再反向做 q.includes(k)：否则一次粘贴词表，就能把全部 12 条碎片一次调出来，
+   关键词检索这条主线（Her Story 式逐词唤出）会被直接绕过。 */
+const hit = (f) => f.keys.some(k => k.includes(q)) || (q.length >= 2 && f.text.includes(q));
 const hits = FRAGS.filter(f =>!S.found.includes(f.id) && hit(f));
+const any = FRAGS.some(f => hit(f));
+/* 把多个词串成一句、因而什么都没命中时，给出可操作的纠正，而不是一句"没有命中"。
+   注意条件里的 !any：若只是"命中的碎片都已经调出来了"，上面这条提示并不适用，
+   否则玩家搜一个合法的单词也会被告知"一次只认一个关键词"。 */
+const embedded = [...new Set(FRAGS.flatMap(f => f.keys).filter(k => q.includes(k)))];
+if (!hits.length && !any && embedded.length) {
+  hintEl.classList.add("hidden");
+  feedback("#fb-search", "mid", embedded.length >= 2
+    ? "终端一次只认一个关键词——这一串里塞了 " + embedded.length + " 个词。一次搜一个，比如「" + embedded[0] + "」。"
+    : "终端一次只认一个关键词。试试只搜「" + embedded[0] + "」。");
+  return;
+}
 if (hits.length) {
 hits.forEach(f => S.found.push(f.id));
 failStreak = 0; hintEl.classList.add("hidden");
@@ -763,7 +816,6 @@ save(); render();
 feedback("#fb-search", true, "调出新碎片 " + hits.length + " 条（累计已调出 " + S.found.length + " / " + FRAGS.length + " 条）。");
 } else {
 failStreak++;
-const any = FRAGS.some(f => hit(f));
 feedback("#fb-search", false, any? "这个词命中的碎片都已经调出来了。": "没有命中。");
 if (!any && failStreak >= 4) {
 const cats = [...new Set(FRAGS.filter(f =>!S.found.includes(f.id)).map(f => f.cat))];
@@ -893,13 +945,14 @@ group.querySelectorAll(".opt").forEach(b => b.classList.remove("sel"));
 btn.classList.add("sel");
 sel[group.dataset.group] = btn.dataset.t;
 }));
+/* v3.1：must 与 any 可以同时生效；引用「终端残片」时用 REQ.frag 显式要求对应碎片已调出，
+   不再依赖 mapping 到一个并不存在于 MATS 里的合成 id。 */
 function evOk(q) {
-const cited = S.cite[q] || [];
 const r = REQ[q];
-const eff = cited.map(id => (id === "msgs" && q === "q6")
-? (S.found.includes("M-19")? "msgs19": "msgs-unrelated"): id);
-if (r.must) return r.must.every(m => cited.includes(m));
-return eff.filter(id => r.any.includes(id)).length >= (r.min || 1);
+const cited = (S.cite[q] || []).filter(id => !(id === "msgs" && r.frag && !S.found.includes(r.frag)));
+const okMust = r.must? r.must.every(m => cited.includes(m)): true;
+const okAny = r.any? cited.filter(id => r.any.includes(id)).length >= (r.min || 1): true;
+return okMust && okAny;
 }
 $("#btn-report").addEventListener("click", async () => {
 const t = $("#r-time").value.trim();
@@ -923,7 +976,11 @@ const ev = evOk(q);
 return { label, conc, ev, full: conc && ev};
 });
 const full = rows.filter(r => r.full).length;
-S.best = Math.max(S.best, full); save(); render();
+/* v3.1b：结案后把"已结"写进存档——重开/刷新后结案陈词仍可回看；
+   即使之后改错重交，已结的事实与结局也不回退。 */
+S.best = Math.max(S.best, full);
+if (full === 6) S.closed = true;
+save(); render();
 result.innerHTML = "";
 const head = document.createElement("p");
 head.className = "feedback " + (full === 6? "ok": "err");
@@ -931,6 +988,14 @@ head.textContent = "整份核对完毕：" + full + " / 6 项「成立 · 证据
 "调查完整度：关键材料 " + matCount() + " / 3，终端碎片 " + S.found.length + " / " + FRAGS.length +
 "，时间轴 " + S.tl.length + " / " + TLC.length + "。";
 result.appendChild(head);
+/* v3.1 RC1：此前已结案（best 曾达 6/6，或第二个补丁的 closed 已为 true），
+   而本次重新提交不足 6/6 时，补一句封存说明——结论不全，但已归档的结案陈词仍可查阅。
+   这里不改变任何结案与存档语义：只多渲染一行提示。 */
+if ((S.closed === true || S.best === 6) && full < 6) {
+const p = document.createElement("p"); p.className = "note";
+p.textContent = "本次复核未能重现全部结论。此前结案陈词已封存，仍可查阅。";
+result.appendChild(p);
+}
 rows.forEach(r => {
 const d = document.createElement("div");
 d.className = "result-item " + (r.full? "ok": r.conc? "mid": "no");
@@ -944,7 +1009,7 @@ const p = document.createElement("p"); p.className = "note";
 p.textContent = "「证据不足」不是答错——是这项结论还没有被你发现的材料撑住。回到终端里补齐它，再改报告重交。";
 result.appendChild(p);
 }
-$("#finale").classList.toggle("hidden", full!== 6);
+$("#finale").classList.toggle("hidden", S.closed !== true);
 if (full === 6) $("#finale").scrollIntoView({ behavior: "smooth"});
 });
 $("#btn-reset").addEventListener("click", () => {
